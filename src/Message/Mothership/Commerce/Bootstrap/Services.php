@@ -270,5 +270,9 @@ class Services implements ServicesInterface
 		$services['commerce.user.collection'] = function($c) {
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.loader']);
 		};
+
+		$services['orders.entities.shipping.methods'] = $services->share(function($c) {
+			return new Commerce\Order\Entity\Shipping\Method\MethodCollection;
+		});
 	}
 }

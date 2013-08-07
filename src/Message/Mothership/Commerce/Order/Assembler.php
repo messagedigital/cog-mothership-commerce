@@ -57,6 +57,14 @@ class Assembler
 	{
 		$this->_order->items->remove($item->id);
 
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
 		return $this;
 	}
 
