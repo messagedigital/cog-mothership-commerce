@@ -26,6 +26,11 @@ class Loader extends Order\Entity\BaseLoader
 		$this->_stockLocations = $stockLocations;
 	}
 
+	public function getByID($id)
+	{
+		return $this->_load($id, false);
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
