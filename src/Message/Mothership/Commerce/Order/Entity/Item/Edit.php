@@ -45,7 +45,7 @@ class Edit implements DB\TransactionalInterface
 		$status = $this->_statuses->get($statusCode);
 
 		if (!is_array($items)) {
-			$items = (array) $items;
+			$items = array($items);
 		}
 
 		foreach ($items as $key => $item) {
