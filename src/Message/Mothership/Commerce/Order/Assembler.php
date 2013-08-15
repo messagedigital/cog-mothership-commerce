@@ -3,7 +3,7 @@
 namespace Message\Mothership\Commerce\Order;
 
 use Message\Mothership\Commerce\User\LoaderInterface;
-use Message\Mothership\Commerce\Order\Entity\Shipping\Method\MethodInterface as ShippingInterface;
+use Message\Mothership\Commerce\Shipping\MethodInterface as ShippingInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\User\UserInterface;
 use Message\Cog\Localisation\Locale;
@@ -32,6 +32,7 @@ class Assembler
 	{
 		$this->_order           = $order;
 		$this->_order->currencyID = 'GBP';
+		$this->_order->type = 'web';
 		$this->_user            = $user;
 		$this->_locale          = $locale;
 		$this->_eventDispatcher = $event;
@@ -153,6 +154,21 @@ class Assembler
 
 	public function addAddress(Entity\Address\Address $address)
 	{
+//		de(xdebug_print_function_stack());
+		if (is_null($address->forename)) {
+			$address->forename = $this->_user->forename;
+		}
+
+		if (is_null($address->surname)) {
+			$address->surname = $this->_user->surname;
+
+		}
+
+		if (is_null($address->title)) {
+			$address->title = $this->_user->title;
+		}
+
+		$address->authorship = new \Message\Cog\ValueObject\Authorship;
 		// ID is set as the type so this will remove all the address types from the
 		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);

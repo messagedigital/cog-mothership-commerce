@@ -139,7 +139,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	public function load()
 	{
 		if (!$this->_loaded) {
-			if ($this->_order->id && $items = $this->_loader->getByOrder($this->_order)) {
+			if ($this->_order->id && is_int($this->_order->id) && $items = $this->_loader->getByOrder($this->_order)) {
 				foreach ($items as $item) {
 					$this->append($item);
 				}

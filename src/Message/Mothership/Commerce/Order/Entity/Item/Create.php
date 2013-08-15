@@ -71,7 +71,7 @@ class Create implements DB\TransactionalInterface
 				options           = :options?sn,
 				brand             = :brand?sn,
 				weight_grams      = :weight?in,
-				stock_location    = :stockLocation?i
+				stock_location 	  = :stockLocation?s
 		', array(
 			'orderID'       => $item->order->id,
 			'createdAt'     => $item->authorship->createdAt(),
