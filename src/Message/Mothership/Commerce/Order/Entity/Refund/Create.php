@@ -42,6 +42,8 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
+		$this->_validate($refund);
+
 		$this->_query->run('
 			INSERT INTO
 				order_refund
@@ -72,5 +74,16 @@ class Create implements DB\TransactionalInterface
 		}
 
 		return $this->_loader->getByID($result->id(), $refund->order);
+	}
+
+	protected function _validate(Refund $refund)
+	{
+		if (! $refund->order) {
+			throw new InvalidArgumentException('Could not create refund: no order specified');
+		}
+
+		if ($refund->amount <= 0) {
+			throw new InvalidArgumentException('Could not create refund: amount must be greater than 0');
+		}
 	}
 }

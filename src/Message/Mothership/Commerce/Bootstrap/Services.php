@@ -167,6 +167,7 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Card,
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
+				new Commerce\Order\Entity\Payment\Method\Manual,
 			));
 		});
 

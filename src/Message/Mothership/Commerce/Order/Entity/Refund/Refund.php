@@ -13,6 +13,7 @@ class Refund implements EntityInterface
 	public $order;
 	public $authorship;
 	public $payment;
+	public $return;
 
 	public $method;
 	public $amount;
