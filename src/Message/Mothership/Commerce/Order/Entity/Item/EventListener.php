@@ -25,6 +25,7 @@ class EventListener implements SubscriberInterface
 		return array(
 			OrderEvents::CREATE_START => array(
 				array('calculateTax'),
+				array('clearTax'),
 				array('setDefaultStatus'),
 			),
 			OrderEvents::CREATE_VALIDATE => array(
@@ -32,6 +33,7 @@ class EventListener implements SubscriberInterface
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
 				array('calculateTax'),
+				array('clearTax'),
 			),
 		);
 	}
@@ -64,14 +66,66 @@ class EventListener implements SubscriberInterface
 	 * Calculate the gross, tax and net amounts for each item in an order before
 	 * it gets created in the database.
 	 *
+	 * This event is skipped if the order is not taxable.
+	 *
 	 * @param Event $event The event object
 	 */
 	public function calculateTax(Event\Event $event)
 	{
-		foreach ($event->getOrder()->items as $item) {
+		$order = $event->getOrder();
+
+		if (!$order->taxable) {
+			return false;
+		}
+
+		foreach ($order->items as $item) {
+			// Set the tax rate to whatever the product's tax rate is, if not already set
+			if (!$item->taxRate) {
+				$item->taxRate = $item->productTaxRate;
+			}
+
+			// Set the gross to the list price minus the discount
 			$item->gross = round($item->listPrice - $item->discount, 2);
-			$item->tax   = round(($item->gross / (100 + $item->taxRate)) * $item->taxRate, 2);
-			$item->net   = round($item->gross - $item->tax, 2);
+
+			// Calculate tax where the strategy is exclusive
+			if ('exclusive' === $item->taxStrategy) {
+				$item->tax    = round($item->gross * ($item->taxRate / 100), 2);
+				$item->gross += $item->tax;
+			}
+			// Calculate tax where the strategy is inclusive
+			else {
+				$item->tax = round(($item->gross / (100 + $item->taxRate)) * $item->taxRate, 2);
+			}
+
+			// Set the net value to gross - tax
+			$item->net = round($item->gross - $item->tax, 2);
+		}
+	}
+
+	/**
+	 * Clear the tax amounts on all items in the order, and reset the gross &
+	 * net amounts.
+	 *
+	 * This event is skipped if the order is taxable.
+	 *
+	 * @param Event\Event $event The event object
+	 */
+	public function clearTax(Event\Event $event)
+	{
+		$order = $event->getOrder();
+
+		if ($order->taxable) {
+			return false;
+		}
+
+		foreach ($order->items as $item) {
+			// Resetting the gross is important because if the tax strategy is
+			// exclusive this will include the tax amount
+			$item->gross   = round($item->listPrice - $item->discount, 2);
+
+			$item->taxRate = 0;
+			$item->tax     = 0;
+			$item->net     = $item->gross;
 		}
 	}
 

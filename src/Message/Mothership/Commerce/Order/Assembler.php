@@ -225,7 +225,16 @@ class Assembler
 		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);
 
-		return $this->_order->addresses->append($address);
+		$this->_order->addresses->append($address);
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_ADDRESS_UPDATE,
+			$event
+		);
+
+		return $this;
 	}
 
 	/**

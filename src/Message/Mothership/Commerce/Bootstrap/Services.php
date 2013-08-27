@@ -222,6 +222,11 @@ class Services implements ServicesInterface
 			));
 		});
 
+		// Configurable/optional event listeners
+		$services['order.listener.vat'] = function($c) {
+			return new Commerce\Order\EventListener\VatListener($c['country.list']);
+		};
+
 		// Product
 		$services['product'] = function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
@@ -261,7 +266,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.create'] = function($c) {
-			return new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+			$create = new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+
+			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
+
+			return $create;
 		};
 
 		$services['product.image.types'] = function($c) {

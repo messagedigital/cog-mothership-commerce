@@ -17,6 +17,7 @@ class Product
 
 	public $name;
 	public $taxRate;
+	public $taxStrategy;
 	public $supplierRef;
 	public $weight;
 

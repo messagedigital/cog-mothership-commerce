@@ -21,13 +21,15 @@ class Item implements EntityInterface
 	public $authorship;
 	public $status;
 
-	public $listPrice = 0;
-	public $net       = 0;
-	public $discount  = 0;
-	public $tax       = 0;
-	public $taxRate   = 0;
-	public $gross     = 0;
-	public $rrp       = 0;
+	public $listPrice       = 0;
+	public $net             = 0;
+	public $discount        = 0;
+	public $tax             = 0;
+	public $gross           = 0;
+	public $rrp             = 0;
+	public $taxRate         = 0;
+	public $productTaxRate  = 0;
+	public $taxStrategy;
 
 	public $productID;
 	public $productName;
@@ -57,16 +59,17 @@ class Item implements EntityInterface
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->taxRate      = $unit->product->taxRate;
-		$this->productID    = $unit->product->id;
-		$this->productName  = $unit->product->name;
-		$this->unitID       = $unit->id;
-		$this->unitRevision = $unit->revisionID;
-		$this->sku          = $unit->sku;
-		$this->barcode      = $unit->barcode;
-		$this->options      = implode($unit->options, ', ');
-		$this->brand        = $unit->product->brand;
-		$this->weight       = $unit->weight;
+		$this->productTaxRate  = $unit->product->taxRate;
+		$this->taxStrategy     = $unit->product->taxStrategy;
+		$this->productID       = $unit->product->id;
+		$this->productName     = $unit->product->name;
+		$this->unitID          = $unit->id;
+		$this->unitRevision    = $unit->revisionID;
+		$this->sku             = $unit->sku;
+		$this->barcode         = $unit->barcode;
+		$this->options         = implode($unit->options, ', ');
+		$this->brand           = $unit->product->brand;
+		$this->weight          = $unit->weight;
 
 		return $this;
 	}

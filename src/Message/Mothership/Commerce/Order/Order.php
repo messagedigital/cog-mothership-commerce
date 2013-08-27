@@ -21,6 +21,7 @@ class Order
 
 	public $type;
 	public $locale;
+	public $taxable;
 	public $currencyID;
 	public $conversionRate    = 0;
 

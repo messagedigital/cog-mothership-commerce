@@ -101,6 +101,7 @@ class Loader
 				product.brand    	 AS brand,
 				product.name         AS name,
 				product.category     AS category,
+				product.tax_strategy AS taxStrategy,
 				product.tax_rate     AS taxRate,
 				product.supplier_ref AS supplierRef,
 				product.weight_grams AS weight,

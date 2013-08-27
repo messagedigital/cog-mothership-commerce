@@ -230,6 +230,8 @@ class Loader
 			$orders[$key]->shippingTaxRate   = (float) $row->shippingTaxRate;
 			$orders[$key]->shippingGross     = (float) $row->shippingGross;
 
+			$orders[$key]->taxable = (bool) $row->taxable;
+
 			$orders[$key]->user = $this->_userLoader->getByID($row->user_id);
 
 			$orders[$key]->authorship->create(

@@ -2,10 +2,9 @@
 
 namespace Message\Mothership\Commerce;
 
-class CountryList  implements \ArrayAccess, \IteratorAggregate, \Countable
+class CountryList implements \ArrayAccess, \IteratorAggregate, \Countable
 {
-
-	protected $_items = array(
+	protected $_countries = array(
 		'AX' => 'Åland Islands',
 		'AL' =>	'Albania',
 		'DZ' =>	'Algeria',
@@ -256,21 +255,50 @@ class CountryList  implements \ArrayAccess, \IteratorAggregate, \Countable
 		'ZW' =>	'Zimbabwe',
 	);
 
+	protected $_eu = array(
+		'AT', // Austria
+		'BE', // Belgium
+		'BG', // Bulgaria
+		'HR', // Croatia
+		'CY', // Cyprus
+		'CZ', // Czech Republic
+		'DK', // Denmark
+		'EE', // Estonia
+		'FI', // Finland
+		'FR', // France
+		'DE', // Germany
+		'GR', // Greece
+		'HU', // Hungary
+		'IE', // Republic of Ireland
+		'IT', // Italy
+		'LV', // Latvia
+		'LT', // Lithuania
+		'LU', // Luxembourg
+		'MT', // Malta
+		'NL', // Netherlands
+		'PL', // Poland
+		'PT', // Portugal
+		'RO', // Romania
+		'SK', // Slovakia
+		'SI', // Slovenia
+		'ES', // Spain
+		'SE', // Sweden
+		'GB', // United Kingdom
+	);
+
 	public function exists($id)
 	{
-		$this->load();
-
-		return array_key_exists($id, $this->_items);
+		return array_key_exists($id, $this->_countries);
 	}
 
 	public function all()
 	{
-		return $this->_items;
+		return $this->_countries;
 	}
 
 	public function count()
 	{
-		return count($this->_items);
+		return count($this->_countries);
 	}
 
 	public function offsetSet($id, $value)
@@ -290,16 +318,25 @@ class CountryList  implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function offsetUnset($id)
 	{
-		unset($this->_items[$id]);
+		unset($this->_countries[$id]);
 	}
 
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->_items);
+		return new \ArrayIterator($this->_countries);
 	}
 
 	public function getByID($countryID)
 	{
 		return isset($this->_counties[$countryID]) ? $this->_counties[$countryID] : false;
+	}
+
+	public function isInEU($countryID)
+	{
+		if (!array_key_exists($countryID, $this->_countries)) {
+			throw new \InvalidArgumentException(sprintf('Invalid country code: `%s`', $countryID));
+		}
+
+		return in_array($countryID, $this->_eu);
 	}
 }

@@ -17,6 +17,11 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  */
 class Create implements DB\TransactionalInterface
 {
+	protected $_allowedTaxStrategies = array(
+		'inclusive',
+		'exclusive',
+	);
+
 	protected $_query;
 	protected $_transOverriden = false;
 
@@ -60,8 +65,10 @@ class Create implements DB\TransactionalInterface
 				discount          = :discount?f,
 				tax               = :tax?f,
 				tax_rate          = :taxRate?f,
+				product_tax_rate  = :productTaxRate?f,
 				gross             = :gross?f,
 				rrp               = :rrp?fn,
+				tax_strategy      = :taxStrategy?sn,
 				product_id        = :productID?in,
 				product_name      = :productName?sn,
 				unit_id           = :unitID?in,
@@ -71,28 +78,30 @@ class Create implements DB\TransactionalInterface
 				options           = :options?sn,
 				brand             = :brand?sn,
 				weight_grams      = :weight?in,
-				stock_location 	  = :stockLocation?s
+				stock_location    = :stockLocation?s
 		', array(
-			'orderID'       => $item->order->id,
-			'createdAt'     => $item->authorship->createdAt(),
-			'createdBy'     => $item->authorship->createdBy(),
-			'listPrice'     => $item->listPrice,
-			'net'           => $item->net,
-			'discount'      => $item->discount,
-			'tax'           => $item->tax,
-			'taxRate'       => $item->taxRate,
-			'gross'         => $item->gross,
-			'rrp'           => $item->rrp,
-			'productID'     => $item->productID,
-			'productName'   => $item->productName,
-			'unitID'        => $item->unitID,
-			'unitRevision'  => $item->unitRevision,
-			'sku'           => $item->sku,
-			'barcode'       => $item->barcode,
-			'options'       => $item->options,
-			'brand'         => $item->brand,
-			'weight'        => $item->weight,
-			'stockLocation' => $item->stockLocation->name,
+			'orderID'        => $item->order->id,
+			'createdAt'      => $item->authorship->createdAt(),
+			'createdBy'      => $item->authorship->createdBy(),
+			'listPrice'      => $item->listPrice,
+			'net'            => $item->net,
+			'discount'       => $item->discount,
+			'tax'            => $item->tax,
+			'taxRate'        => $item->taxRate,
+			'productTaxRate' => $item->productTaxRate,
+			'gross'          => $item->gross,
+			'rrp'            => $item->rrp,
+			'taxStrategy'    => $item->taxStrategy,
+			'productID'      => $item->productID,
+			'productName'    => $item->productName,
+			'unitID'         => $item->unitID,
+			'unitRevision'   => $item->unitRevision,
+			'sku'            => $item->sku,
+			'barcode'        => $item->barcode,
+			'options'        => $item->options,
+			'brand'          => $item->brand,
+			'weight'         => $item->weight,
+			'stockLocation'  => $item->stockLocation->name,
 		));
 
 		$this->_query->setIDVariable('ITEM_ID');
@@ -163,6 +172,14 @@ class Create implements DB\TransactionalInterface
 
 		if (!($item->stockLocation instanceof Stock\Location\Location)) {
 			throw new \InvalidArgumentException('Item must have a valid stock location');
+		}
+
+		if (!in_array($item->taxStrategy, $this->_allowedTaxStrategies)) {
+			throw new \InvalidArgumentException(sprintf(
+				'Item must have a valid tax strategy (one of `%s`). `%s` given.',
+				implode('`, `', $this->_allowedTaxStrategies),
+				$item->taxStrategy
+			));
 		}
 	}
 }

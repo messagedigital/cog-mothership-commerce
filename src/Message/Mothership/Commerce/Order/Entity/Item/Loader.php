@@ -61,15 +61,17 @@ class Loader extends Order\Entity\BaseLoader
 		$result = $this->_query->run('
 			SELECT
 				*,
-				item_id       AS id,
-				order_id      AS orderID,
-				list_price    AS listPrice,
-				tax_rate      AS taxRate,
-				product_id    AS productID,
-				product_name  AS productName,
-				unit_id       AS unitID,
-				unit_revision AS unitRevision,
-				weight_grams  AS weight
+				item_id          AS id,
+				order_id         AS orderID,
+				list_price       AS listPrice,
+				tax_rate         AS taxRate,
+				product_tax_rate AS productTaxRate,
+				tax_strategy     AS taxStrategy,
+				product_id       AS productID,
+				product_name     AS productName,
+				unit_id          AS unitID,
+				unit_revision    AS unitRevision,
+				weight_grams     AS weight
 			FROM
 				order_item
 			LEFT JOIN
@@ -87,13 +89,14 @@ class Loader extends Order\Entity\BaseLoader
 
 		foreach ($result as $key => $row) {
 			// Cast decimals to float
-			$items[$key]->listPrice = (float) $row->listPrice;
-			$items[$key]->net       = (float) $row->net;
-			$items[$key]->discount  = (float) $row->discount;
-			$items[$key]->tax       = (float) $row->tax;
-			$items[$key]->taxRate   = (float) $row->taxRate;
-			$items[$key]->gross     = (float) $row->gross;
-			$items[$key]->rrp       = (float) $row->rrp;
+			$items[$key]->listPrice      = (float) $row->listPrice;
+			$items[$key]->net            = (float) $row->net;
+			$items[$key]->discount       = (float) $row->discount;
+			$items[$key]->tax            = (float) $row->tax;
+			$items[$key]->taxRate        = (float) $row->taxRate;
+			$items[$key]->productTaxRate = (float) $row->productTaxRate;
+			$items[$key]->gross          = (float) $row->gross;
+			$items[$key]->rrp            = (float) $row->rrp;
 
 			// Set authorship data
 			$items[$key]->authorship->create(

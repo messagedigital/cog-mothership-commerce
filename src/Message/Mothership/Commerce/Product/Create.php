@@ -17,11 +17,18 @@ class Create
 	protected $_locale;
 	protected $_user;
 
+	protected $_defaultTaxStrategy = 'inclusive';
+
 	public function __construct(Query $query, Locale $locale, UserInterface $user)
 	{
 		$this->_query  = $query;
 		$this->_locale = $locale;
 		$this->_user   = $user;
+	}
+
+	public function setDefaultTaxStrategy($strategy)
+	{
+		$this->_defaultTaxStrategy = $strategy;
 	}
 
 	public function save(Product $product)
@@ -33,7 +40,8 @@ class Create
 				product.product_id   = null,
 				product.name         = ?s,
 				product.weight_grams = ?i,
-				product.tax_rate     = ?,
+				product.tax_rate     = ?f,
+				product.tax_strategy = ?s,
 				product.supplier_ref = ?s,
 				product.created_at   = ?d,
 				product.created_by   = ?i',
@@ -41,6 +49,7 @@ class Create
 				$product->name,
 				$product->weight,
 				$product->taxRate,
+				$this->_defaultTaxStrategy,
 				$product->supplierRef,
 				$product->authorship->createdAt(),
 				$product->authorship->createdBy()->id

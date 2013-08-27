@@ -110,7 +110,7 @@ class Edit extends Controller
 				foreach($locationArray as $location => $stock) {
 					// remove all spaces and tabs and cast stock to int
 					$stock = (int)(preg_replace('/\s+/','',$stock));
-					
+
 					if($stock > 0) {
 						$stockManager->increment(
 							$this->_units[$unitID],
@@ -520,6 +520,7 @@ class Edit extends Controller
 			$product->displayName                = $data['display_name'];
 			$product->year                       = $data['year'];
 			$product->taxRate                    = $data['tax_rate'];
+			$product->taxStrategy                = $data['tax_strategy'];
 			$product->supplierRef                = $data['supplier_ref'];
 			$product->weight                	 = $data['weight_grams'];
 			$product->season                     = $data['season'];
@@ -567,6 +568,7 @@ class Edit extends Controller
 				'display_name'                  => $this->_product->displayName,
 				'year'                          => $this->_product->year,
 				'tax_rate'                      => $this->_product->taxRate,
+				'tax_strategy'                  => $this->_product->taxStrategy,
 				'supplier_ref'                  => $this->_product->supplierRef,
 				'weight_grams'                  => $this->_product->weight,
 				'season'                        => $this->_product->season,
@@ -616,8 +618,18 @@ class Edit extends Controller
 			->val()
 				->maxLength(4)
 				->optional();
+
 		$form->add('tax_rate', 'text', $this->trans('ms.commerce.product.label.tax-rate'))
 			->val()->maxLength(255);
+
+		$form->add('tax_strategy', 'choice', $this->trans('ms.commerce.product.tax-strategy'), array(
+			'choices'     => array(
+				'inclusive' => 'Inclusive',
+				'exclusive' => 'Exclusive',
+			),
+			'empty_value' => false,
+		));
+
 		$form->add('supplier_ref', 'text', $this->trans('ms.commerce.product.label.supplier-ref'))
 			->val()
 				->maxLength(255)
@@ -640,7 +652,6 @@ class Edit extends Controller
 			->val()->optional();
 		$form->add('export_manufacture_country_id', 'choice', $this->trans('ms.commerce.product.label.export-manufacture-country'), array(
 			'choices' => $this->get('country.list')->all(),
-			'attr' => array('data-help-key' => 'ms.cms.attributes.access.help'),
 		))->val()->optional();
 
 		return $form;

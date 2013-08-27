@@ -10,7 +10,7 @@
 		<h1>Editing '{{ product.name }}'</h1>
 </hgroup>
 
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:ProductsMenu#index', {'productID':product.id}))}}
+{{ render(controller('Message:Mothership:Commerce::Controller:Product:Menu#index', {'productID':product.id}))}}
 
 <section class="container-content">
 	{{ form_start(form) }}
