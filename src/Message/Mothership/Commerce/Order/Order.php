@@ -58,8 +58,8 @@ class Order
 		$this->authorship = new Authorship;
 		$this->metadata   = new Metadata;
 
-		foreach ($entities as $name => $loader) {
-			$this->addEntity($name, $loader);
+		foreach ($entities as $name => $collection) {
+			$this->addEntity($name, $collection);
 		}
 	}
 
@@ -92,18 +92,20 @@ class Order
 	/**
 	 * Add an entity to this order.
 	 *
-	 * @param string                 $name   Entity name
-	 * @param Entity\LoaderInterface $loader Entity loader
+	 * @param string                 $name       Entity name
+	 * @param Entity\OrderCollection $collection Entity order collection
 	 *
 	 * @throws \InvalidArgumentException If an entity with the given name already exists
 	 */
-	public function addEntity($name, Entity\LoaderInterface $loader)
+	public function addEntity($name, Entity\CollectionOrderLoader $collection)
 	{
 		if (array_key_exists($name, $this->_entities)) {
 			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
 		}
 
-		$this->_entities[$name] = new Entity\Collection($this, $loader);
+		$collection->setOrder($this);
+
+		$this->_entities[$name] = $collection;
 	}
 
 	/**
@@ -149,17 +151,7 @@ class Order
 	 */
 	public function getItemRows()
 	{
-		$rows = array();
-
-		foreach ($this->_getEntity('items') as $item) {
-			if (!array_key_exists($item->unitID, $rows)) {
-				$rows[$item->unitID] = new Entity\Item\Row;
-			}
-
-			$rows[$item->unitID]->add($item);
-		}
-
-		return $rows;
+		return $this->_getEntity('items')->getRows();
 	}
 
 	/**
@@ -175,16 +167,7 @@ class Order
 	 */
 	public function getAddress($type)
 	{
-		$addresses = $this->_getEntity('addresses')->getByProperty('type', $type);
-
-		if (count($addresses) > 1) {
-			throw new \UnexpectedValueException(sprintf(
-				'Order has more than one `%s` address',
-				$type
-			));
-		}
-
-		return current($addresses) ?: false;
+		return $this->_getEntity('addresses')->getByType($type);
 	}
 
 	/**

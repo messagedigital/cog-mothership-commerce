@@ -48,9 +48,10 @@ class Loader
 			throw new \InvalidArgumentException(sprintf('Unknown order entity: `%s`', $name));
 		}
 
-		$this->_entities[$name]->setOrderLoader($this);
+		$loader = $this->_entities[$name]->getLoader();
+		$loader->setOrderLoader($this);
 
-		return $this->_entities[$name];
+		return $loader;
 	}
 
 	/**
