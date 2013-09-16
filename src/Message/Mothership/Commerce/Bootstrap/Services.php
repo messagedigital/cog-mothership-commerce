@@ -38,6 +38,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['basket.order'] = function($c) {
+
 			if (!$c['http.session']->get('basket.order')) {
 				$order = $c['order'];
 				$order->locale = $c['locale']->getId();
@@ -406,6 +407,25 @@ class Services implements ServicesInterface
 
 		$services['shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Shipping\MethodCollection;
+		});
+
+		/*
+		 * Basket
+		 */
+		$services['order.basket.create'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Create($c['db.query']);
+		});
+
+		$services['order.basket.edit'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Edit($c['db.query']);
+		});
+
+		$services['order.basket.loader'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Loader($c['db.query'], $c['order.basket.token']);
+		});
+
+		$services['order.basket.token'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Token($c['user.password_hash'], $c['cfg']);
 		});
 	}
 }
