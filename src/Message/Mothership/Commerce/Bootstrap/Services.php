@@ -341,10 +341,6 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		};
 
-		$services['country.list'] = function($c) {
-			return new Commerce\CountryList;
-		};
-
 		// DO NOT USE: LEFT IN FOR BC
 		$services['option.loader'] = function($c) {
 			return $c['product.option.loader'];
@@ -355,7 +351,9 @@ class Services implements ServicesInterface
 		};
 
 		$services['commerce.user.address.loader'] = function($c) {
-			return new Commerce\User\Address\Loader($c['db.query']);
+			return new Commerce\User\Address\Loader(
+				$c['db.query'],
+				$c['country.list']);
 		};
 
 		$services['commerce.user.address.create'] = function($c) {

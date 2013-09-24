@@ -7,7 +7,7 @@ use Message\Mothership\Commerce\Order\Event;
 
 use Message\Mothership\Commerce\Order\Entity\Address\Address;
 
-use Message\Mothership\Commerce\CountryList;
+use Message\Cog\Location\CountryList;
 
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
