@@ -64,9 +64,9 @@ class OrderDiscount extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported order discount</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

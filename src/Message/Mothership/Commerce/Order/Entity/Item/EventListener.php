@@ -35,6 +35,11 @@ class EventListener implements SubscriberInterface
 				array('calculateTax'),
 				array('clearTax'),
 			),
+			OrderEvents::CREATE_ITEM => array(
+				array('calculateTax'),
+				array('clearTax'),
+				array('setDefaultStatus'),
+			),
 		);
 	}
 

@@ -104,9 +104,9 @@ class OrderSummary extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successfulo</info>';
+        	$this->writeln('<info>Successfully ported order summary</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

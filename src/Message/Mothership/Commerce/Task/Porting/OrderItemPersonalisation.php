@@ -49,9 +49,9 @@ class OrderItemPersonalisation extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported order item personalisations</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

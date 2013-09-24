@@ -2,6 +2,7 @@ company-name:
 vat-registration:
 company-number:
 telephone:
+email:
 address:
   lines:
     -

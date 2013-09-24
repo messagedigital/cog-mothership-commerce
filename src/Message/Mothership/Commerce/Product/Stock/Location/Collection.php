@@ -8,6 +8,11 @@ namespace Message\Mothership\Commerce\Product\Stock\Location;
 class Collection implements \IteratorAggregate, \Countable
 {
 	protected $_locations = array();
+	protected $_roles = array();
+
+	const SELL_ROLE = 'sell';
+	const HOLD_ROLE = 'hold';
+	const BIN_ROLE  = 'bin';
 
 	/**
 	 * Constructor.
@@ -106,6 +111,37 @@ class Collection implements \IteratorAggregate, \Countable
 	public function count()
 	{
 		return count($this->_locations);
+	}
+
+	/**
+	 * Set the location for a role.
+	 * 
+	 * @param string $role
+	 * @param string $name
+	 *
+	 * @return Collection
+	 */
+	public function setRoleLocation($role, $name)
+	{
+		$this->_roles[$role] = $name;
+
+		return $this;
+	}
+
+	/**
+	 * Get the location for a role.
+	 * 
+	 * @param  string $role
+	 * 
+	 * @return Location
+	 */
+	public function getRoleLocation($role)
+	{
+		if (! array_key_exists($this->_roles, $role)) {
+			throw new \InvalidArgumentException(sprintf('Location role `%s` does not exist', $role));
+		}
+
+		return $this->get($this->_roles[$role]);
 	}
 
 	/**

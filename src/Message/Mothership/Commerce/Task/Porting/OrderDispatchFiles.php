@@ -53,6 +53,12 @@ class OrderDispatchFiles extends Porting
 			// Save the file
 			$this->get('filesystem')->dumpFile($path, $contents);
 		}
+
+		if ($new->commit()) {
+        	$this->writeln('<info>Successfully ported order dispatch files</info>');
+		}
+
+		return true;
     }
 
     /**

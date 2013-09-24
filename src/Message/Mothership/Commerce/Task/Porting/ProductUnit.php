@@ -65,9 +65,9 @@ class ProductUnit extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported product units</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

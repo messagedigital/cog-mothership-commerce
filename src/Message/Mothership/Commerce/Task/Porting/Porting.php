@@ -3,9 +3,22 @@
 namespace Message\Mothership\Commerce\Task\Porting;
 
 use Message\Cog\Console\Task\Task as BaseTask;
+use Message\Cog\DB\Adapter\MySQLi\Connection;
+use Symfony\Component\Console\Input\InputArgument;
 
 abstract class Porting extends BaseTask
 {
+
+	protected function configure()
+	{
+		$this
+			->addArgument(
+				'old',
+				InputArgument::REQUIRED,
+				'please pass in the name of the service as the last parameter'
+			);
+	}
+
 	/**
 	 * Gets the DB connection to port the data from
 	 *
@@ -13,13 +26,14 @@ abstract class Porting extends BaseTask
 	 */
 	public function getFromConnection()
 	{
-        return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
-				'host'		=> $this->get('cfg')->porting->from->hostname,
-				'user'		=> $this->get('cfg')->porting->from->user,
-				'password' 	=> $this->get('cfg')->porting->from->pass,
-				'db'		=> $this->get('cfg')->porting->from->name,
-				'charset'	=> 'utf-8',
-		));
+		$serviceName = $this->getRawInput()->getArgument('old');
+		$service = $this->get($serviceName);
+
+		if (!$service instanceof Connection) {
+			throw new \Exception('service must be instance of Message\Cog\DB\Adapter\MySQLi\Connection');
+		}
+
+		return $service;
 	}
 
 	/**

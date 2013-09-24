@@ -47,9 +47,9 @@ class ProductExport extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported product export</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

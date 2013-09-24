@@ -23,13 +23,7 @@ class OrderItemReturn extends Porting
 					IF (return_status_id = 55, UNIX_TIMESTAMP(package_received_date), NULL) AS completed_at,
 					NULL AS completed_by,
 					return_exchange_item_id AS exchange_item_id,
-					CASE return_status_id
-						WHEN 51 THEN 2000
-						WHEN 52 THEN 2300
-						WHEN 53 THEN 2400
-						WHEN 54 THEN 2500
-						WHEN 55 THEN 3000
-					END AS status_id,
+					IF (package_received_date IS NULL, 2000, 2100) AS status_id,
 					return_reason_name AS reason,
 					return_resolution_name AS resolution,
 					IFNULL(balancing_payment,0) AS balance,
@@ -94,9 +88,9 @@ class OrderItemReturn extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported order item return</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

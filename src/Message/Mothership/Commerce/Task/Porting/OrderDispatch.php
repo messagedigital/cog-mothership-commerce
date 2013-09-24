@@ -93,9 +93,9 @@ class OrderDispatch extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported order dispatches</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

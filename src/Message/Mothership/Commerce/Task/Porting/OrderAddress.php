@@ -118,9 +118,9 @@ class OrderAddress extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported order addresses</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

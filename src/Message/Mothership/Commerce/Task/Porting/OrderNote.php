@@ -55,9 +55,9 @@ class OrderNote extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported order note</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

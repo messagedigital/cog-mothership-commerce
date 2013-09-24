@@ -147,10 +147,11 @@ class ProductsPricing extends Porting
 
 			}
 		}
+
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported product prices</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

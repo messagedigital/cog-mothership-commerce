@@ -9,6 +9,7 @@ use Message\User\UserInterface;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
  * Order item creator.
@@ -26,13 +27,16 @@ class Create implements DB\TransactionalInterface
 	protected $_transOverriden = false;
 
 	protected $_loader;
+	protected $_eventDispatcher;
 	protected $_currentUser;
 
-	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
+	public function __construct(DB\Transaction $query, Loader $loader, DispatcherInterface $eventDispatcher,
+		UserInterface $currentUser)
 	{
-		$this->_query       = $query;
-		$this->_loader      = $loader;
-		$this->_currentUser = $currentUser;
+		$this->_query           = $query;
+		$this->_loader          = $loader;
+		$this->_eventDispatcher = $eventDispatcher;
+		$this->_currentUser     = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -43,6 +47,9 @@ class Create implements DB\TransactionalInterface
 
 	public function create(Item $item)
 	{
+		$item = $this->_eventDispatcher->dispatch(Order\Events::CREATE_ITEM, new Order\Event\ItemEvent($item->order, $item))
+			->getItem();
+
 		// Set create authorship data if not already set
 		if (!$item->authorship->createdAt()) {
 			$item->authorship->create(

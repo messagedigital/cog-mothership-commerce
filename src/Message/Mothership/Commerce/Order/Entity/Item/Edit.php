@@ -59,7 +59,11 @@ class Edit implements DB\TransactionalInterface
 
 		foreach ($items as $key => $item) {
 			if (!($item instanceof Item)) {
-				throw new \InvalidArgumentException(sprintf('Unexpected value: expected order item instance'));
+				$type = gettype($item);
+				if ($type == 'object') {
+					$type = get_class($item);
+				}
+				throw new \InvalidArgumentException(sprintf('Unexpected value: expected order item instance - "' . $type . '"'));
 			}
 
 			// Skip if the item is already at this status

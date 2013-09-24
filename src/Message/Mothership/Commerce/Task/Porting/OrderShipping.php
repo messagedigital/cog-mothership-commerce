@@ -79,9 +79,9 @@ class OrderShipping extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported order shipping</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

@@ -8,6 +8,7 @@ class Events
 	const ASSEMBLER_ADDRESS_UPDATE = 'commerce.order.assembler.address.update';
 	const CREATE_VALIDATE          = 'commerce.order.create.validate';
 	const CREATE_START             = 'commerce.order.create.start';
+	const CREATE_ITEM              = 'commerce.order.create.item';
 	const CREATE_END               = 'commerce.order.create.end';
 	const CREATE_COMPLETE          = 'commerce.order.create.complete';
 	const EDIT                     = 'commerce.order.edit';

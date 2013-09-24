@@ -236,9 +236,9 @@ class User extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported users</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

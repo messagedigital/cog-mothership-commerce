@@ -130,9 +130,9 @@ class Products extends Porting
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported products</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }
