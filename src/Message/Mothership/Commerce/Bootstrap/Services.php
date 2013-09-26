@@ -426,6 +426,18 @@ class Services implements ServicesInterface
 			return new Commerce\Shipping\MethodCollection;
 		});
 
+		$services['forex'] = $services->share(function($c) {
+			return new Commerce\Forex\Forex(
+				$c['db.query'],
+				'GBP',
+				array('GBP', 'USD', 'EUR', 'JPY')
+			);
+		});
+
+		$services['forex.feed'] = $services->share(function($c) {
+			return new Commerce\Forex\Feed\ECB($c['db.query']);
+		});
+
 		/*
 		 * Basket
 		 */
