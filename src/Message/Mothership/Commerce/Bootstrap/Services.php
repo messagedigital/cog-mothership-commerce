@@ -82,7 +82,7 @@ class Services implements ServicesInterface
 				),
 				'notes'      => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Note\Loader($c['db.query'])
+					new Commerce\Order\Entity\Note\Loader($c['db.query'], $c['event.dispatcher'])
 				),
 				'payments'   => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,

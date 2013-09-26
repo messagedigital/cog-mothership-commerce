@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Order;
 
 class Events
 {
+
 	const ASSEMBLER_UPDATE         = 'commerce.order.assembler.update';
 	const ASSEMBLER_ADDRESS_UPDATE = 'commerce.order.assembler.address.update';
 	const CREATE_VALIDATE          = 'commerce.order.create.validate';
@@ -17,4 +18,5 @@ class Events
 	const DISPATCH_POSTAGE_AUTO    = 'commerce.order.dispatch.postage.automatically';
 	const BUILD_ORDER_SIDEBAR      = 'commerce.order.sidebar.create';
 	const BUILD_ORDER_TABS         = 'commerce.order.tabs.create';
+	const CREATE_NOTE              = 'commerce.order.note.create';
 }

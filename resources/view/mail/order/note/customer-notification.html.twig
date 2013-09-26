@@ -1,0 +1,13 @@
+{% extends '::mail:order:template' %}
+
+{% block content %}
+	<p>An admininstrator has added a note to your order:</p>
+
+	<p>{{ note.note }}</p>
+
+	<p>
+		{{ merchant.name }}<br>
+		Phone: {{ merchant.telephone }}<br>
+		Email: {{ merchant.email }}<br>
+	</p>
+{% endblock %}

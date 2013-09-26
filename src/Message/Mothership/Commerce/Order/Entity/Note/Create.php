@@ -3,9 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Note;
 
 use Message\Mothership\Commerce\Order;
-
 use Message\User\UserInterface;
-
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
@@ -20,11 +18,12 @@ class Create implements DB\TransactionalInterface
 	protected $_query;
 	protected $_currentUser;
 
-	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser, DispatcherInterface $event)
 	{
 		$this->_query       = $query;
 		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
+		$this->_event       = $event;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -60,6 +59,11 @@ class Create implements DB\TransactionalInterface
 			'customerNotified' => $note->customerNotified,
 			'raisedFrom'       => $note->raisedFrom,
 		));
+
+		$this->_event->dispatch(
+			Order\Events::CREATE_NOTE,
+			$event
+		);
 
 		if ($this->_query instanceof DB\Transaction) {
 			return $note;

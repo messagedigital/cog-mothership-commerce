@@ -1,0 +1,17 @@
+{% extends '::mail:template' %}
+
+{% block body %}
+	{{ parent() }}
+
+	{% block content %}{% endblock content %}
+
+	{% block footer %}
+		<hr>
+
+		<p>A VAT receipt is available here: {{ url('...') }}</p>
+
+		<p>Please do not reply to this email. For any inquiries regarding orders please email {{ merchant.email }} Thank you.</p>
+
+		<p>In respect of errors, omissions or orders identified for re-sale purposes, {{ merchant.name }} reserve the right to cancel or amend these orders accordingly.</p>
+	{% endblock footer %}
+{% endblock body %}
