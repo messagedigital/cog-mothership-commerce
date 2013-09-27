@@ -899,10 +899,11 @@ class Edit extends Controller
 			)->val()->number();
 		}
 
-		$form->add('tax_rate', 'percent', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
-			'type' => 'integer',
+		$form->add('tax_rate', 'choice', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
 			'data' => $this->_product->taxRate,
-			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.tax-rate.help')
+			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.tax-rate.help'),
+			'choices' => $this->get('product.tax.rates'),
+			'empty_value' => '-- Please select --'
 		))
 			->val()
 			->number()

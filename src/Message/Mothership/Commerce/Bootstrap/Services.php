@@ -354,6 +354,12 @@ class Services implements ServicesInterface
 			return $c['product.option.loader'];
 		};
 
+		$services['product.tax.rates'] = function($c) {
+			return array(
+				'20.00' => 'VAT - 20%'
+			);
+		};
+
 		$services['product.option.loader'] = function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
