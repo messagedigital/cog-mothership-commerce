@@ -1,4 +1,5 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
+{% import 'Message:Mothership:Commerce::options' as option %}
 
 {% block edit %}
 	{{ form_start(form) }}
@@ -6,9 +7,7 @@
 		<thead>
 			<tr>
 				<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
-				{% for heading in headings %}
-					<th>{{heading}}</th>
-				{% endfor %}
+				<th>{{ 'ms.commerce.product.units.option.label'|trans }}</th>
 				<th>{{ 'ms.commerce.product.units.prices.label'|trans }}</th>
 				<th>{{ 'ms.commerce.product.details.weight-grams.label'|trans }}</th>
 				<th>{{ 'ms.commerce.product.units.visible.label'|trans }}</th>
@@ -19,11 +18,9 @@
 			{% for unit in units %}
 				<tr>
 					<td>{{ form_widget(form[unit.id]['sku']) }}</td>
-					{% for name, title in headings %}
-						<td>
-							{{ form_widget(form[unit.id]['options'][name]) }}
-						</td>
-					{% endfor %}
+					<td>
+						{{ form_widget(form[unit.id]['optionForm']) }}
+					</td>
 					<td>
 					{% for name, value in unit.price %}
 						<div class="inline">
@@ -44,56 +41,15 @@
 	{{ form_end(form) }}
 
 	{{ form_start(addForm) }}
-	<table>
-		<thead>
-			<tr>
-				<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
-				<th>{{ 'ms.commerce.product.units.option.type.label'|trans }}</th>
-				<th>{{ 'ms.commerce.product.units.option.value.label'|trans }}</th>
-				<th>{{ 'ms.commerce.product.units.prices.label'|trans }}</th>
-				<th>{{ 'ms.commerce.product.details.weight-grams.label'|trans }}</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>{{ form_widget(addForm.sku) }}</td>
-				<td>
-					{{ form_widget(addForm.option_name_1) }}
-					{{ form_widget(addForm.option_name_2) }}
-				</td>
-				<td>
-					<div class="inline">
-						{{ form_widget(addForm.option_value_1) }}
-					</div>
 
-					<div class="inline">
-						{{ form_widget(addForm.option_value_2) }}
-					</div>
-				</td>
-				<td>
-					<div class="inline">
-						{{ form_row(addForm['price']['retail']) }}
-					</div>
-					<div class="inline">
-						{{ form_row(addForm['price']['cost']) }}
-					</div>
-					<div class="inline">
-					{{ form_row(addForm['price']['rrp']) }}
-					</div>
-				</td>
-				<td>{{ form_widget(addForm.weight) }}</td>
+	{{ form_row(addForm.sku) }}
 
-			</tr>
-		</tbody>
-	</table>
-		<button type="submit" class="button small submit">
-			{{ 'ms.commerce.product.button.save'|trans }}
-		</button>
-		<datalist id="option_value">
-			{% for option in optionValue %}
-				<option value="{{ option }}">{{option}}</option>
-			{% endfor %}
-		</datalist>
+	{{ option.renderRepeatable(addForm.options) }}
+
+	{{ form_rest(addForm) }}
+	<button type="submit" class="button small submit">
+		{{ 'ms.commerce.product.button.save'|trans }}
+	</button>
 
 	{{ form_end(addForm) }}
 

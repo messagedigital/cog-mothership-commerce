@@ -1,20 +1,29 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
-
+{% import 'Message:Mothership:Commerce::options' as option %}
 {% block edit %}
-<ul>
-	{% for image in product.images %}
-		<li>
-			{{ getResizedImage(image.file, 200, 200) }}
-			<ul>
-				<li>{{ 'ms.commerce.product.image.type.label'|trans }} {{ image.type }}</li>
-				<li>{{ 'ms.commerce.product.image.option.name.label'|trans }} {{ image.optionName }}</li>
-				<li>{{ 'ms.commerce.product.image.option.value.label'|trans }} {{ image.optionValue }}</li>
-			</ul>
-		</li>
-	{% endfor %}
-</ul>
+	<div>
+		{% for image in product.images %}
+			<div>
+				{{ getResizedImage(image.file, 200, 200) }}
+				<dl>
+					<dt>{{ 'ms.commerce.product.image.type.label'|trans }}</dt>
+					<dd>{{ image.type }}</dd>
+					{% for name,value in image.options %}
+						<dt>{{ name }}</dt>
+						<dd>{{ value }}</dd>
+					{% endfor %}
+				</dl>
+			</div>
+		{% endfor %}
+	</div>
+
 	{{ form_start(form) }}
+		{{ form_row(form.image) }}
+		{{ form_row(form.type) }}
+		{{ option.renderRepeatable(form.options) }}
+
 		{{ form_rest(form) }}
+
 		<button type="submit" class="button small save" id="save-content">
 			{{ 'ms.commerce.product.button.save'|trans }}
 		</button>

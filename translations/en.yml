@@ -120,7 +120,8 @@ ms.commerce:
         label: Delete
         help: -
       option:
-        type:
+        label: Options
+        name:
           label: Option Type
           placeholder: Option Type
           empty-value: Select Option

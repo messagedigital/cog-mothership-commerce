@@ -1,0 +1,26 @@
+{% macro getRepeatablePrototype(repeatable) %}
+	{% filter escape %}
+		<section class="group">
+			{% for field in repeatable.vars.prototype %}
+				{{ form_row(field) }}
+			{% endfor %}
+			<a href="#" data-group-remove class="button small remove">Remove Option</a>
+		</section>
+	{% endfilter %}
+{% endmacro %}
+
+{% macro renderRepeatable(repeatable) %}
+	<section class="display-group">
+		<h2 class="title">Options</h2>
+		<div class="content-wrap">
+			<section class="repeatable-group">
+				{% do repeatable.setRendered %}
+				<div class="add-group">
+					<a href="#" data-group-add data-prototype="{{ _self.getRepeatablePrototype(repeatable) }}" class="button small add">
+						Add option
+					</a>
+				</div>
+			</section>
+		</div>
+	</section>
+{% endmacro %}
