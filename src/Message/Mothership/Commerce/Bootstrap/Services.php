@@ -166,7 +166,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.dispatch.edit'] = function($c) {
-			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current']);
+			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current'], $c['event.dispatcher']);
 		};
 
 		// Order document entity

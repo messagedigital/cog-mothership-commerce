@@ -1,0 +1,30 @@
+Your  order has now been dispatched. Delivery and order details are as follows.
+
+------------------------------------------------------------------
+
+{% block details %}
+Order Number: {{ order.id }}
+
+Order Details:
+{% for row in order.items.getRows %}
+	{{ row.quantity }} x {{ row.first.description }}
+{% endfor %}
+
+Delivery Method: {{ order.shippingDisplayName }}
+
+Delivery Address: {{ order.getAddress('delivery').flatten|join(', ') }}
+{% endblock %}
+
+{% if dispatch.method.getTrackingLink(dispatch.code) %}
+Track your order:
+Your {{ dispatch.method.getDisplayName() }} order tracking number is {{ dispatch.code }}, please click the following link to check on the delivery status of your order.
+{{ dispatch.method.getTrackingLink.href }}
+
+{% elseif false %}
+Track your order:
+You can track your order by loggin into your account and selecting the order in 'View order history' within the 'Your account' section.
+
+{% endif %}
+
+
+All orders must be signed for when you receive your delivery.
