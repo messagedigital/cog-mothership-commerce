@@ -96,5 +96,9 @@ class Routes implements RoutesInterface
 			->setRequirement('orderID', '\d+');
 		$router['ms.order']->add('ms.commerce.order.detail.view.notes', 'view/{orderID}/note', '::Controller:Order:OrderDetail#noteListing')
 			->setRequirement('orderID', '\d+');
+		$router['ms.order']->add('ms.commerce.order.detail.view.documents', 'view/{orderID}/document', '::Controller:Order:OrderDetail#documentListing')
+			->setRequirement('orderID', '\d+');
+
+		$router['ms.order']->add('ms.commerce.order.document.print', 'document/{documentID}/print', '::Controller:Order:Document#printDocument');
 	}
 }

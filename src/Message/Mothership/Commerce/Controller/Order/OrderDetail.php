@@ -88,6 +88,16 @@ class OrderDetail extends Controller
 		));
 	}
 
+	public function documentListing($orderID)
+	{
+		$this->_order     = $this->get('order.loader')->getById($orderID);
+		$this->_documents = $this->get('order.document.loader')->getByOrder($this->_order);
+		return $this->render('::order:detail:document:listing', array(
+			'order' => $this->_order,
+			'documents' => $this->_documents,
+		));
+	}
+
 	public function sidebar($orderID)
 	{
 		$this->_order = $this->get('order.loader')->getById($orderID);

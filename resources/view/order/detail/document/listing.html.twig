@@ -1,0 +1,15 @@
+{% extends '::order:detail:view' %}
+
+{% block order_content %}
+	<section class="container-content">
+		<section class=" display-group">
+
+			{% for document in documents %}
+				{% include '::order:detail:document:detail' %}
+			{% else %}
+				{{ 'ms.commerce.order.document.none'|trans }}
+			{% endfor %}
+
+		</section>
+	</section>
+{% endblock %}
