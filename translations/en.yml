@@ -215,6 +215,11 @@ ms.commerce:
       customer-notified: Customer Notified
       raised-from: Raised From
 
+      create:
+        title: Add note
+        button: Add note to the order
+        notify: Notify the customer
+
     metadata:
       none: There is no metadata to view.
 

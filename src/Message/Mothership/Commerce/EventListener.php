@@ -88,6 +88,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function sendCustomerNotification(Note\CreateNoteEvent $event)
 	{
 		$note     = $event->getNote();
+
+		if (! $note->customerNotified) {
+			return;
+		}
+
 		$order    = $event->getOrder();
 		$merchant = $this->get('cfg')->merchant;
 

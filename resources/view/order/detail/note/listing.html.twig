@@ -12,6 +12,14 @@
 				{{ 'ms.commerce.order.note.none'|trans }}
 			{% endif %}
 
+			<h2 class="title">{{ 'ms.commerce.order.note.create.title'|trans }}</h2>
+			<div class="content-wrap">
+				{{ form_start(createNoteForm) }}
+					{{ form_rest(createNoteForm) }}
+					<button type="submit" class="button save">{{ 'ms.commerce.order.note.create.button'|trans }}</button>
+				{{ form_end(createNoteForm) }}
+			</div>
+
+		</section>
 	</section>
-</section>
 {% endblock %}

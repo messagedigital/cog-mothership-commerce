@@ -105,6 +105,9 @@ class Routes implements RoutesInterface
 		$router['ms.order']->add('ms.commerce.order.detail.view.documents', 'view/{orderID}/document', '::Controller:Order:OrderDetail#documentListing')
 			->setRequirement('orderID', '\d+');
 
+		$router['ms.order']->add('ms.commerce.order.detail.process.notes', 'process/{orderID}/note', '::Controller:Order:OrderDetail#processNote')
+			->setRequirement('orderID', '\d+');
+
 		$router['ms.order']->add('ms.commerce.order.document.print', 'document/{documentID}/print', '::Controller:Order:Document#printDocument');
 	}
 }
