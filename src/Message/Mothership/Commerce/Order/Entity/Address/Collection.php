@@ -10,13 +10,8 @@ class Collection extends BaseCollection
 	{
 		$addresses = $this->getByProperty('type', $type);
 
-		if (count($addresses) > 1) {
-			throw new \UnexpectedValueException(sprintf(
-				'Order has more than one `%s` address',
-				$type
-			));
-		}
+		ksort($addresses);
 
-		return current($addresses) ?: false;
+		return end($addresses) ?: false;
 	}
 }
