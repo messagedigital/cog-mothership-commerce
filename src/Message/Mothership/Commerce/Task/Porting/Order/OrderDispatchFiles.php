@@ -62,13 +62,16 @@ class OrderDispatchFiles extends Porting
 			// Set the details for the packing slip
 			$filename = $row->order_id . '_packing-slip';
 			$contents = (string) $this->getHtml($row->slip);
-			$path     = $fileDestination . '/' . $filename . '.html';
+			$path     = $fileDestination . '/' . $filename . '.pdf';
 
 			$manager = $this->get('filesystem.stream_wrapper_manager');
 			$handler = $manager::getHandler('cog');
 			$path    = $handler->getLocalPath($path);
-			// Save the file
-			$this->get('filesystem')->dumpFile($path, $contents);
+
+			// Convert file to pdf
+			$converter = $this->get('filesystem.conversion.pdf');
+			$converter->setHtml($contents);
+			$file = $converter->save($path);
 
 			$new->add($documentSql, array(
 				'order_id' => $row->order_id,
