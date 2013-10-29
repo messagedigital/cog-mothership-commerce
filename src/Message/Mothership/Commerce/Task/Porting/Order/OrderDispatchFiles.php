@@ -28,6 +28,8 @@ class OrderDispatchFiles extends Porting
 			AND despatch_timestamp IS NOT NULL'
 		);
 
+		$new->add('TRUNCATE order_document');
+
 		$documentSql = '
 				INSERT INTO
 					order_document
