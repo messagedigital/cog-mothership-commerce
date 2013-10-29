@@ -54,7 +54,7 @@ class OrderDispatchFiles extends Porting
 			$dirs = array(
 				'cog://data/order',
 				'cog://data/order/picking',
-				'cog://data/order/picking/' . $row->created_at,
+				'cog://data/order/picking/' . date('Ymd', $row->created_at),
 			);
 			// Create the directory
 			$fileDestination = array_pop($dirs);
