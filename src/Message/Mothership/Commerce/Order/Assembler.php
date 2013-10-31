@@ -276,7 +276,7 @@ class Assembler
 	{
 		$this->_order->shippingName        = $option->getName();
 		$this->_order->shippingDisplayName = $option->getDisplayName();
-		$this->_order->shippingListPrice   = $option->getPrice();
+		$this->_order->shippingListPrice   = $option->getPrice($this->_order);
 
 		$event = new Event($this->_order);
 		// Dispatch the edit event

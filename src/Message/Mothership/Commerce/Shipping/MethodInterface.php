@@ -28,7 +28,7 @@ interface MethodInterface
 	/**
 	 * Get price for the shipping method.
 	 */
-	public function getPrice();
+	public function getPrice(Order $order);
 
 	/**
 	 * Determine whether the shipping method is available for an order.
