@@ -82,6 +82,8 @@ class OrderDispatchFiles extends Porting
 				'url' => preg_replace('/(.+)(data\/order\/picking)(.+)/', 'cog://$2$3', $path)
 			));
 
+			$this->writeln(sprintf('<comment>Ported document "%s"', $path));
+
 			// Set the data for the label data
 			$filename = $row->order_id .'_'.$row->despatch_id.'_label-data';
 			$contents = (string) $row->label_data;
@@ -107,6 +109,8 @@ class OrderDispatchFiles extends Porting
 				// http://regex101.com/r/jK5rN1
 				'url' =>  preg_replace('/(.+)(data\/order\/picking)(.+)/', 'cog://$2$3', $path)
 			));
+
+			$this->writeln(sprintf('<comment>Ported document "%s"', $path));
 		}
 
 		if ($new->commit()) {

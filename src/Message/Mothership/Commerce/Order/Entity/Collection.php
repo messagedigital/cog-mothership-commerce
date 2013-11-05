@@ -23,7 +23,7 @@ class Collection implements CollectionInterface
 	public function get($id)
 	{
 		foreach ($this->_items as $item) {
-			if ($id === $item->id) {
+			if ($id == $item->id) {
 				return $item;
 			}
 		}
