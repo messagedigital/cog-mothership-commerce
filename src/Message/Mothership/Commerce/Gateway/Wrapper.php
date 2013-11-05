@@ -82,7 +82,7 @@ class Wrapper implements GatewayInterface
 
 		$this->_card->setShippingCity($address->town);
 		$this->_card->setShippingPostcode($address->postcode);
-		$this->_card->setShippingState($address->state);
+		$this->_card->setShippingState($address->stateID);
 		$this->_card->setShippingCountry($address->countryID);
 		$this->_card->setShippingPhone($address->telephone);
 
@@ -99,7 +99,7 @@ class Wrapper implements GatewayInterface
 
 		$this->_card->setCity($address->town);
 		$this->_card->setPostcode($address->postcode);
-		$this->_card->setState($address->state);
+		$this->_card->setState($address->stateID);
 		$this->_card->setCountry($address->countryID);
 		$this->_card->setPhone($address->telephone);
 	}

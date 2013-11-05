@@ -42,6 +42,9 @@ class Services implements ServicesInterface
 			if (!$c['http.session']->get('basket.order')) {
 				$order = $c['order'];
 				$order->locale = $c['locale']->getId();
+				if ($c['user.current'] and ! $c['user.current'] instanceof \Message\User\AnonymousUser) {
+					$order->user = $c['user.current'];
+				}
 				$c['http.session']->set('basket.order', $order);
 			}
 
@@ -338,7 +341,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.edit'] = function($c) {
-			return new Commerce\Product\Edit($c['db.query'], $c['locale'], $c['user.current']);
+			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
 		};
 
 		$services['product.unit.edit'] = function($c) {

@@ -74,7 +74,9 @@ class Create
 
 	public function create(Order $order, array $metadata = array())
 	{
-		$order = $this->_eventDispatcher->dispatch(Events::CREATE_START, new Event\Event($order))
+		$event = new Event\TransactionalEvent($order);
+		$event->setTransaction($this->_trans);
+		$order = $this->_eventDispatcher->dispatch(Events::CREATE_START, $event)
 			->getOrder();
 
 		$validation = $this->_eventDispatcher->dispatch(Events::CREATE_VALIDATE, new Event\ValidateEvent($order));
@@ -83,10 +85,12 @@ class Create
 			throw new \InvalidArgumentException(sprintf('Cannot create order: %s', implode(', ', $validation->getErrors())));
 		}
 
-		$order->authorship->create(
-			new DateTimeImmutable,
-			$this->_currentUser->id
-		);
+		if (!$order->authorship->createdAt()) {
+			$order->authorship->create(
+				new DateTimeImmutable,
+				$this->_currentUser->id
+			);
+		}
 
 		$this->_trans->add('
 			INSERT INTO
@@ -184,7 +188,9 @@ class Create
 				$entity->order = $order;
 
 				// Create the entities with the same authorship data as the order
-				if (isset($entity->authorship) && $entity->authorship instanceof Authorship) {
+				if (isset($entity->authorship)
+				 && $entity->authorship instanceof Authorship
+				 && !$entity->authorship->createdAt()) {
 					$entity->authorship->create(
 						$order->authorship->createdAt(),
 						$order->authorship->createdBy()

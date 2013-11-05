@@ -118,13 +118,19 @@ class Loader extends Order\Entity\BaseLoader
 			// Set the stock location
 			$items[$key]->stockLocation = $this->_stockLocations->get($row->stock_location);
 
-			// Add personalisation data, if set
-			if ($row->sender_name || $row->recipient_name || $row->recipient_email || $row->message) {
-				$items[$key]->personalisation = new Personalisation;
-				$items[$key]->personalisation->senderName     = $row->sender_name;
-				$items[$key]->personalisation->recipientName  = $row->recipient_name;
-				$items[$key]->personalisation->recipientEmail = $row->recipient_email;
-				$items[$key]->personalisation->message        = $row->message;
+			// Load personalisation data
+			$personalisation = $this->_query->run('
+				SELECT
+					name,
+					value
+				FROM
+					order_item_personalisation
+				WHERE
+					item_id = ?i
+			', $items[$key]->id);
+
+			foreach ($personalisation->hash('name', 'value') as $name => $value) {
+				$items[$key]->personalisation->{$name} = $value;
 			}
 
 			$return[$row->id] = $items[$key];

@@ -4,51 +4,53 @@
 
 	<h1>Stock Adjustments</h1>
 	<div class="dual-column">
-	<div class="column">
-<h2>Adjust Stock</h2>
 		{{ form_start(form) }}
-		<table>
-			<thead>
-				<tr>
-					<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
-					{% for heading in headings %}
-						<th>{{ heading }}</th>
-					{% endfor %}
-					{% for location in locations %}
-						<th>{{ location.displayName }}</th>
-					{% endfor %}
-				</tr>
-			</thead>
-			<tbody>
-				{% for unit in units %}
+		<div class="column">
+			<h2>Adjust Stock</h2>
+
+			<table>
+				<thead>
 					<tr>
-						<td><span>{{ unit.sku }}</span></td>
-						{% for key, name in headings %}
-							<td>
-							{% if key in unit.options|keys %}
-								{{ unit.getOption(key) }}
-							{% endif %}
-							</td>
+						<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
+						{% for heading in headings %}
+							<th>{{ heading }}</th>
 						{% endfor %}
 						{% for location in locations %}
-							<div class="inline">
-								<td>{{ unit.getStockForLocation(location) }} {{ form_widget(form['units'][unit.id][location.name]) }}</td>
-							</div>
+							<th>{{ location.displayName }}</th>
 						{% endfor %}
 					</tr>
-				{% endfor %}
-			</tbody>
-		</table></div>
-	<div class="column">
-		<h2>Adjustment Information</h2>
-		{{ form_row(form['reason']) }}
-		{{ form_row(form['note']) }}
-		<button type="submit" class="button small save" id="save-content">
-			{{ 'ms.commerce.product.button.save'|trans }}
-		</button>
+				</thead>
+				<tbody>
+					{% for unit in units %}
+						<tr>
+							<td><span>{{ unit.sku }}</span></td>
+							{% for key, name in headings %}
+								<td>
+								{% if key in unit.options|keys %}
+									{{ unit.getOption(key) }}
+								{% endif %}
+								</td>
+							{% endfor %}
+							{% for location in locations %}
+								<div class="inline">
+									<td>{{ unit.getStockForLocation(location) }} {{ form_widget(form['units'][unit.id][location.name]) }}</td>
+								</div>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="column">
+			<h2>Adjustment Information</h2>
+			{{ form_row(form['reason']) }}
+			{{ form_row(form['note']) }}
+			<button type="submit" class="button small save" id="save-content">
+				{{ 'Update Stock' }}
+			</button>
+		</div>
 		{{ form_end(form) }}
-</div>
-</div>
+	</div>
 	<section class="display-group">
 		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
 
@@ -58,9 +60,9 @@
 					Stock Movement #{{ movement.id }}
 					- {{ movement.authorship.createdAt|date }}
 					{% if movement.automated %}
-						- Automated Movement
+						(Automated)
 					{% else %}
-						by {{ movement.authorship.createdBy }}
+						by {{ movement.authorship.createdUser.name }}
 					{% endif %}
 				</h2>
 

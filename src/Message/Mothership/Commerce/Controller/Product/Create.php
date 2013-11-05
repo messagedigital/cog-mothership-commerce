@@ -17,6 +17,7 @@ class Create extends Controller
 	public function process()
 	{
 		$form = $this->_getForm();
+
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$product = $this->get('product');
 			$product->name = $data['name'];
@@ -30,6 +31,10 @@ class Create extends Controller
 				return $this->redirectToRoute('ms.commerce.product.edit.attributes', array('productID' => $product->id));
 			}
 		}
+
+		return $this->render('::product:create', array(
+			'form'  => $form,
+		));
 	}
 
 	protected function _getForm()

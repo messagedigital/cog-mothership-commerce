@@ -28,26 +28,66 @@ class OrderItemPersonalisation extends Porting
 		$output= '';
 		$new->add('TRUNCATE order_item_personalisation');
 
-		foreach($result as $row) {
-			$new->add('
-				INSERT INTO
-					order_item_personalisation
-				(
-					item_id,
-					sender_name,
-					recipient_name,
-					recipient_email,
-					message
-				)
-				VALUES
-				(
-					:item_id?,
-					:sender_name?,
-					:recipient_name?,
-					:recipient_email?,
-					:message?
-				)', (array) $row
-			);
+		foreach ($result as $row) {
+			if ($row->sender_name) {
+				$new->add('
+					INSERT INTO
+						order_item_personalisation
+					SET
+						item_id = :itemID?i,
+						name    = :name?s,
+						value   = :value?sn
+				', array(
+					'itemID' => $row->item_id,
+					'name'   => 'sender_name',
+					'value'  => $row->sender_name,
+				));
+			}
+
+			if ($row->recipient_name) {
+				$new->add('
+					INSERT INTO
+						order_item_personalisation
+					SET
+						item_id = :itemID?i,
+						name    = :name?s,
+						value   = :value?sn
+				', array(
+					'itemID' => $row->item_id,
+					'name'   => 'recipient_name',
+					'value'  => $row->recipient_name,
+				));
+			}
+
+			if ($row->recipient_email) {
+				$new->add('
+					INSERT INTO
+						order_item_personalisation
+					SET
+						item_id = :itemID?i,
+						name    = :name?s,
+						value   = :value?sn
+				', array(
+					'itemID' => $row->item_id,
+					'name'   => 'recipient_email',
+					'value'  => $row->recipient_email,
+				));
+			}
+
+			if ($row->message) {
+				$new->add('
+					INSERT INTO
+						order_item_personalisation
+					SET
+						item_id = :itemID?i,
+						name    = :name?s,
+						value   = :value?sn
+				', array(
+					'itemID' => $row->item_id,
+					'name'   => 'message',
+					'value'  => $row->message,
+				));
+			}
 		}
 
 		if ($new->commit()) {

@@ -8,7 +8,7 @@ use Message\Cog\Localisation\Locale;
 
 use Message\User\UserInterface;
 
-use Message\Cog\DB\Query;
+use Message\Cog\DB\Transaction;
 use Message\Cog\DB\Result;
 
 /**
@@ -16,13 +16,14 @@ use Message\Cog\DB\Result;
  */
 class Edit
 {
-	protected $_query;
+	protected $_trans;
 	protected $_user;
 	protected $_locale;
+	protected $_product;
 
-	public function __construct(Query $query, Locale $locale, UserInterface $user)
+	public function __construct(Transaction $trans, Locale $locale, UserInterface $user)
 	{
-		$this->_query  = $query;
+		$this->_trans  = $trans;
 		$this->_user   = $user;
 		$this->_locale = $locale;
 	}
@@ -36,67 +37,13 @@ class Edit
 	 */
 	public function save(Product $product)
 	{
-		$result = $this->_query->run(
-			'UPDATE
-				product
-			 JOIN
-			 	product_info ON (product.product_id = product_info.product_id AND product_info.locale = :localeID?s)
-			 LEFT JOIN
-			 	product_export ON (product.product_id = product_export.product_id AND product_export.locale = :localeID?s)
-			 SET
-				product.year         = :year?in,
-				product.updated_at   = :updated_at?i,
-				product.updated_by   = :updated_by?in,
-				product.brand     	 = :brand?sn,
-				product.name         = :name?s,
-				product.tax_rate     = :tax_rate?sn,
-				product.tax_strategy = :tax_strategy?s,
-				product.supplier_ref = :supplier_ref?sn,
-				product.weight_grams = :weight_grams?in,
-				product.category     = :category?sn,
+		$this->_product = $product;
 
-				product_info.display_name      = :display_name?sn,
-				product_info.season            = :season?sn,
-				product_info.description       = :description?sn,
-				product_info.fabric            = :fabric?sn,
-				product_info.features          = :features?sn,
-				product_info.care_instructions = :care_instructions?sn,
-				product_info.short_description = :short_description?sn,
-				product_info.sizing            = :sizing?sn,
-				product_info.notes             = :notes?sn,
+		$this->_saveProduct()
+			->_saveProductInfo()
+			->_saveProductExport();
 
-				product_export.export_value       = :exportValue?fn,
-				product_export.export_description = :exportDescription?sn,
-				product_export.export_manufacture_country_id  = :exportCountryID?s
-			WHERE
-				product.product_id = :productID?i
-			', array(
-				'year'              => $product->year,
-				'updated_at'        => $product->authorship->updatedAt(),
-				'udpated_by'        => $product->authorship->updatedBy(),
-				'brand'          	=> $product->brand,
-				'name'              => $product->name,
-				'tax_rate'          => $product->taxRate,
-				'tax_strategy'      => $product->taxStrategy,
-				'supplier_ref'      => $product->supplierRef,
-				'weight_grams'      => $product->weight,
-				'display_name'      => $product->displayName,
-				'season'            => $product->season,
-				'description'       => $product->description,
-				'fabric'            => $product->fabric,
-				'features'          => $product->features,
-				'care_instructions' => $product->careInstructions,
-				'short_description' => $product->shortDescription,
-				'sizing'            => $product->sizing,
-				'notes'             => $product->notes,
-				'category'          => $product->category,
-				'productID'			=> $product->id,
-				'localeID'			=> $this->_locale->getId(),
-				'exportValue'		=> $product->exportValue,
-				'exportDescription'	=> $product->exportDescription,
-				'exportCountryID'	=> $product->exportManufactureCountryID,
-			)
-		);
+		$this->_trans->commit();
 
 		return $product;
 	}
@@ -119,7 +66,7 @@ class Edit
 		}
 
 		// Delete any tags associated with this product
-		$this->_query->run(
+		$this->_trans->add(
 			'DELETE FROM
 				product_tag
 			WHERE
@@ -130,7 +77,7 @@ class Edit
 		);
 
 		// Insert all the tags
-		$result = $this->_query->run(
+		$this->_trans->add(
 			'INSERT INTO
 				product_tag
 				(
@@ -141,6 +88,8 @@ class Edit
 				'.implode(',',$inserts).' ',
 			$options
 		);
+
+		$this->_trans->commit();
 
 		return $product;
 	}
@@ -166,7 +115,7 @@ class Edit
 			$inserts[] = '(?i,?s,?s,?s,?s)';
 		}
 
-		$result = $this->_query->run(
+		$this->_trans->add(
 			'REPLACE INTO
 				product_price
 				(
@@ -181,6 +130,163 @@ class Edit
 			$options
 		);
 
+		$this->_trans->commit();
+
 		return $product;
+	}
+
+	protected function _saveProduct()
+	{
+		if (!$this->_product) {
+			throw new \LogicException('Cannot edit product as no product is set');
+		}
+
+		$this->_trans->add("
+			UPDATE
+				product
+		 	SET
+				year         = :year?in,
+				updated_at   = :updatedAt?d,
+				updated_by   = :updatedBy?in,
+				brand     	 = :brand?sn,
+				name         = :name?s,
+				tax_rate     = :taxRate?sn,
+				tax_strategy = :taxStrategy?s,
+				supplier_ref = :supplierRef?sn,
+				weight_grams = :weightGrams?in,
+				category     = :category?sn
+			WHERE
+				product_id = :productID?i
+			", array(
+				'productID'         => $this->_product->id,
+				'year'              => $this->_product->year,
+				'updatedAt'         => $this->_product->authorship->updatedAt(),
+				'updatedBy'         => $this->_product->authorship->updatedBy()->id,
+				'brand'          	=> $this->_product->brand,
+				'name'              => $this->_product->name,
+				'taxRate'           => $this->_product->taxRate,
+				'taxStrategy'       => $this->_product->taxStrategy,
+				'supplierRef'       => $this->_product->supplierRef,
+				'weightGrams'       => $this->_product->weight,
+				'category'          => $this->_product->category,
+		));
+
+		return $this;
+	}
+
+	/**
+	 * If a product_info row does not exist, add a new one, else update it
+	 *
+	 * @throws \LogicException
+	 *
+	 * @return Edit                 Return $this for chainability
+	 */
+	protected function _saveProductInfo()
+	{
+		if (!$this->_product) {
+			throw new \LogicException('Cannot edit product info as no product is set');
+		}
+
+		$this->_trans->add("
+			INSERT INTO
+				product_info
+				(
+					product_id,
+					locale,
+					display_name,
+					season,
+					description,
+					fabric,
+					features,
+					care_instructions,
+					short_description,
+					sizing,
+					notes
+				)
+			VALUES
+				(
+					:product_id?i,
+					:locale?sn,
+					:displayName?sn,
+					:season?sn,
+					:description?sn,
+					:fabric?sn,
+					:features?sn,
+					:careInstructions?sn,
+					:shortDescription?sn,
+					:sizing?sn,
+					:notes?sn
+				)
+			ON DUPLICATE KEY UPDATE
+				display_name		= :displayName?sn,
+				season				= :season?sn,
+				description			= :description?sn,
+				fabric				= :fabric?sn,
+				features			= :features?sn,
+				care_instructions	= :careInstructions?sn,
+				short_description	= :shortDescription?sn,
+				sizing				= :sizing?sn,
+				notes				= :notes?sn
+		", array(
+			'product_id'        => $this->_product->id,
+			'locale'            => $this->_locale->getID(),
+			'displayName'       => $this->_product->displayName,
+			'season'            => $this->_product->season,
+			'description'       => $this->_product->description,
+			'fabric'            => $this->_product->fabric,
+			'features'          => $this->_product->features,
+			'careInstructions'  => $this->_product->careInstructions,
+			'shortDescription'  => $this->_product->shortDescription,
+			'sizing'            => $this->_product->sizing,
+			'notes'             => $this->_product->notes,
+		));
+
+		return $this;
+	}
+
+	/**
+	 * Save data to product export table, create new row if not exists
+	 *
+	 * @throws \LogicException
+	 *
+	 * @return Edit
+	 */
+	protected function _saveProductExport()
+	{
+		if (!$this->_product) {
+			throw new \LogicException('Cannot edit product export info as no product is set');
+		}
+
+		$this->_trans->add("
+			INSERT INTO
+				product_export
+				(
+					product_id,
+					locale,
+					export_value,
+					export_description,
+					export_manufacture_country_id
+				)
+			VALUES
+				(
+					:productID?i,
+					:locale?sn,
+					:exportValue?fn,
+					:exportDescription?sn,
+					:exportCountryID?s
+				)
+			ON DUPLICATE KEY UPDATE
+				export_value					= :exportValue?fn,
+				export_description				= :exportDescription?sn,
+				export_manufacture_country_id	= :exportCountryID?s
+		", array(
+			'productID'         => $this->_product->id,
+			'locale'            => $this->_locale->getID(),
+			'exportValue'		=> $this->_product->exportValue,
+			'exportDescription'	=> $this->_product->exportDescription,
+			'exportCountryID'	=> $this->_product->exportManufactureCountryID,
+		));
+
+		return $this;
 	}
 }

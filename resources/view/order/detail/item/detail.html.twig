@@ -1,59 +1,53 @@
-
-
-<h2 class="title">{{ item.brand }} {{ item.productName }}  &mdash; {{ item.options }}</h2>
+<h2 class="title">{{ item.description }}</h2>
 
 <div class="container-details dual-column" id="item{{ item.id }}">
-
-
-<div class="column">
-
-
+	<div class="column">
 		<h2>Pricing Details</h2>
 		<ul class="order-details ">
 			<li><span>Net</span> {{ item.net|price(order.currencyID) }}</li>
 			<li><span>Discount</span> {{ item.discount|price(order.currencyID) }}</li>
 			<li><span>Tax</span> {{ item.tax|price(order.currencyID) }}</li>
-			<li><span>Item Gross</span> {{ item.gross|price(order.currencyID) }} </li>
+			<li><span>Gross</span> {{ item.gross|price(order.currencyID) }} </li>
 		</ul>
 		<h2>Item Details</h2>
 		<ul class="order-details ">
 			<li><span>SKU</span> {{ item.sku }}</li>
 			<li><span>Barcode</span> {{ item.barcode }}</li>
-			<li><span>Weight</span> {{ item.weight }}</li>
-			<li><span>Personalised </span> {{ item.isPersonalised }}</li>
+			<li><span>Weight</span> {{ item.weight }} grams</li>
 		</ul>
 		<h2>Processing Details</h2>
 		<ul class="order-details ">
-			<li><span>Shipping Type</span> ({{ order.shippingDisplayName }})</li>
-			<li><span>Created by</span> {{ item.authorship.createdBy }}</li>
-			<li><span>Current Staus</span> {{ item.status }}</li>
+			<li><span>Created at</span> {{ item.authorship.createdAt|date }}</li>
+			<li><span>Created by</span> {{ item.authorship.createdUser.name }}</li>
+			<li><span>Current status</span> {{ item.status }}</li>
 		</ul>
+		{% if item.personalisation|length > 0 %}
+		<h2>Personalisation Data</h2>
+		<ul class="order-details">
+			{% for name, value in item.personalisation %}
+			<li><span>{{ item.personalisation.getDisplayName(name) }}</span> {{ value|nl2br }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	</div>
 
-</div>
-
-
-<div class="column">
+	<div class="column">
 		<h2>Status History</h2>
 		<table class="order-listing progress">
-		<thead>
-		<tr>
-			<th><span>Date / Time</span></th>
-			<th><span>Status</span></th>
-			<th><span>Updated By</span></th>
-
-		</tr>
-		</thead>
-		{% for status in statuses[item.id] %}
-		<tr>
-			<td>{{ status.authorship.createdAt|date }}</td>
-			<td>{{ status }}</td>
-			<td>{{ status.authorship.createdBy }}</td>
-
-		</tr>
-		{% endfor %}
-	</table>
-
-
+			<thead>
+				<tr>
+					<th><span>Status</span></th>
+					<th><span>Updated at</span></th>
+					<th><span>Updated by</span></th>
+				</tr>
+			</thead>
+			{% for status in statuses[item.id] %}
+			<tr>
+				<td>{{ status }}</td>
+				<td>{{ status.authorship.createdAt|date }}</td>
+				<td>{{ status.authorship.createdUser.name }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
 </div>
-</div>
-

@@ -18,14 +18,14 @@ class Create implements DB\TransactionalInterface
 	protected $_loader;
 	protected $_query;
 	protected $_currentUser;
-	protected $_event;
+	protected $_eventDispatcher;
 
-	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser, DispatcherInterface $event)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser, DispatcherInterface $eventDispatcher)
 	{
-		$this->_query       = $query;
-		$this->_loader      = $loader;
-		$this->_currentUser = $currentUser;
-		$this->_event       = $event;
+		$this->_query           = $query;
+		$this->_loader          = $loader;
+		$this->_currentUser     = $currentUser;
+		$this->_eventDispatcher = $eventDispatcher;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -35,6 +35,17 @@ class Create implements DB\TransactionalInterface
 
 	public function create(Note $note)
 	{
+		$event = new Order\Event\EntityEvent($note->order, $note);
+
+		if ($this->_query instanceof DB\Transaction) {
+			$event->setTransaction($this->_query);
+		}
+
+		$note = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE,
+			$event
+		)->getEntity();
+
 		// Set create authorship data if not already set
 		if (!$note->authorship->createdAt()) {
 			$note->authorship->create(
@@ -61,11 +72,6 @@ class Create implements DB\TransactionalInterface
 			'customerNotified' => $note->customerNotified,
 			'raisedFrom'       => $note->raisedFrom,
 		));
-
-		$this->_event->dispatch(
-			Order\Events::CREATE_NOTE,
-			new CreateNoteEvent($note)
-		);
 
 		if ($this->_query instanceof DB\Transaction) {
 			return $note;

@@ -24,6 +24,8 @@ class Status
 	{
 		$this->code = (int) $code;
 		$this->name = $name;
+
+		$this->authorship = new Authorship;
 	}
 
 	/**

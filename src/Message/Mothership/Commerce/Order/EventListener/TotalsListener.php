@@ -46,6 +46,10 @@ class TotalsListener implements SubscriberInterface
 		$order = $event->getOrder();
 
 		if (!$order->shippingListPrice) {
+			$order->shippingGross = 0;
+			$order->shippingTax   = 0;
+			$order->shippingNet   = 0;
+
 			return false;
 		}
 

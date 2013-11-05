@@ -7,6 +7,7 @@ use Message\Cog\HTTP\Request;
 use Message\Cog\Cache\Instance;
 use Message\Mothership\Commerce\Order\Order;
 use Message\Mothership\Commerce\Order\Entity\Payment\Payment;
+use Message\Mothership\Commerce\Order\Entity\Address\Address;
 
 class Sagepay extends Wrapper
 {
@@ -29,6 +30,26 @@ class Sagepay extends Wrapper
 		$this->_order   = $order;
 		$this->setGateway($gatewayName, $request);
 		$this->_config = $config;
+	}
+
+	public function setDeliveryAddress(Address $address)
+	{
+		parent::setDeliveryAddress($address);
+
+		// Remove the state if the country is not United States
+		if ("US" !== strtoupper($address->countryID)) {
+			$this->_card->setShippingState("");
+		}
+	}
+
+	public function setBillingAddress(Address $address)
+	{
+		parent::setBillingAddress($address);
+
+		// Remove the state if the country is not United States
+		if ("US" !== strtoupper($address->countryID)) {
+			$this->_card->setState("");
+		}
 	}
 
 	public function send()

@@ -66,11 +66,22 @@ class Collection implements CollectionInterface
 		$this->_items[] = $entity;
 	}
 
-	public function remove($id)
+	/**
+	 * Remove an entity from this collection.
+	 *
+	 * @param  int|EntityInterface $item Entity ID or exact same entity instance
+	 *                                   to be removed (it's not enough to just
+	 *                                   all have the same properties)
+	 *
+	 * @return boolean                   True if the item was removed
+	 */
+	public function remove($entity)
 	{
 		foreach ($this->_items as $key => $item) {
-			if ($item->id == $id) {
+			if (($entity instanceof EntityInterface && $entity === $item)
+			 || $item->id == $entity) {
 				unset($this->_items[$key]);
+
 				return true;
 			}
 		}

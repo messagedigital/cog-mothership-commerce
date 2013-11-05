@@ -164,6 +164,10 @@ class Loader
 			}
 		}
 
+
+		// Order by created_at DESC, status_code DESC to solve issue:
+		// https://github.com/messagedigital/uniform_wares/issues/320
+		// Where pick & pack statuses have exactly the same timestamp when actioned together.
 		$result = $this->_query->run('
 			SELECT
 				order_item.order_id,
@@ -176,7 +180,7 @@ class Loader
 				FROM
 					order_item_status
 				ORDER BY
-					order_item_status.created_at DESC
+					order_item_status.created_at DESC, order_item_status.status_code DESC
 			) AS statuses USING (item_id)
 			GROUP BY
 				item_id

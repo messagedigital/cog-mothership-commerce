@@ -23,22 +23,15 @@ class EventListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			OrderEvents::CREATE_START => array(
+			OrderEvents::ENTITY_CREATE => array(
 				array('calculateTax'),
-				array('clearTax'),
 				array('setDefaultStatus'),
 			),
 			OrderEvents::CREATE_VALIDATE => array(
 				array('checkItemSet')
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
-				array('calculateTax'),
-				array('clearTax'),
-			),
-			OrderEvents::CREATE_ITEM => array(
-				array('calculateTax'),
-				array('clearTax'),
-				array('setDefaultStatus'),
+				array('calculateAllItemsTax'),
 			),
 		);
 	}
@@ -56,15 +49,18 @@ class EventListener implements SubscriberInterface
 	/**
 	 * Set the default statuses on all items that don't already have a status set.
 	 *
-	 * @param Event $event The event object
+	 * @param EntityEvent $event The event object
 	 */
-	public function setDefaultStatus(Event\Event $event)
+	public function setDefaultStatus(Event\EntityEvent $event)
 	{
-		foreach ($event->getOrder()->items as $item) {
-			if (!$item->status) {
-				$item->status = new Status\Status($this->_defaultStatus->code, $this->_defaultStatus->name);
-			}
+		$item = $event->getEntity();
+
+		if (!($item instanceof Item)
+		 || $item->status) {
+			return false;
 		}
+
+		$item->status = new Status\Status($this->_defaultStatus->code, $this->_defaultStatus->name);
 	}
 
 	/**
@@ -73,64 +69,23 @@ class EventListener implements SubscriberInterface
 	 *
 	 * This event is skipped if the order is not taxable.
 	 *
-	 * @param Event $event The event object
+	 * @param EntityEvent $event The event object
 	 */
-	public function calculateTax(Event\Event $event)
+	public function calculateTax(Event\EntityEvent $event)
 	{
-		$order = $event->getOrder();
+		$item = $event->getEntity();
 
-		if (!$order->taxable) {
+		if (!($item instanceof Item)) {
 			return false;
 		}
 
-		foreach ($order->items as $item) {
-			// Set the tax rate to whatever the product's tax rate is, if not already set
-			if (!$item->taxRate) {
-				$item->taxRate = $item->productTaxRate;
-			}
-
-			// Set the gross to the list price minus the discount
-			$item->gross = round($item->listPrice - $item->discount, 2);
-
-			// Calculate tax where the strategy is exclusive
-			if ('exclusive' === $item->taxStrategy) {
-				$item->tax    = round($item->gross * ($item->taxRate / 100), 2);
-				$item->gross += $item->tax;
-			}
-			// Calculate tax where the strategy is inclusive
-			else {
-				$item->tax = round(($item->gross / (100 + $item->taxRate)) * $item->taxRate, 2);
-			}
-
-			// Set the net value to gross - tax
-			$item->net = round($item->gross - $item->tax, 2);
-		}
+		$this->_calculateTaxForItem($item);
 	}
 
-	/**
-	 * Clear the tax amounts on all items in the order, and reset the gross &
-	 * net amounts.
-	 *
-	 * This event is skipped if the order is taxable.
-	 *
-	 * @param Event\Event $event The event object
-	 */
-	public function clearTax(Event\Event $event)
+	public function calculateAllItemsTax(Event\Event $event)
 	{
-		$order = $event->getOrder();
-
-		if ($order->taxable) {
-			return false;
-		}
-
-		foreach ($order->items as $item) {
-			// Resetting the gross is important because if the tax strategy is
-			// exclusive this will include the tax amount
-			$item->gross   = round($item->listPrice - $item->discount, 2);
-
-			$item->taxRate = 0;
-			$item->tax     = 0;
-			$item->net     = $item->gross;
+		foreach ($event->getOrder()->items as $item) {
+			$this->_calculateTaxForItem($item);
 		}
 	}
 
@@ -139,5 +94,50 @@ class EventListener implements SubscriberInterface
 		if (count($event->getOrder()->items) < 1) {
 			$event->addError('Order must have at least one item to be created');
 		}
+	}
+
+	protected function _calculateTaxForItem(Item $item)
+	{
+		if (!$item->order->taxable) {
+			// Resetting the gross is important because if the tax strategy is
+			// exclusive this will include the tax amount
+			$item->gross = round($item->listPrice - $item->discount, 2);
+
+			if ('inclusive' === $item->taxStrategy) {
+				$item->gross = round($item->gross - $this->_calculateInclusiveTax($item->gross, $item->productTaxRate), 2);
+			}
+
+			$item->taxRate = 0;
+			$item->tax     = 0;
+			$item->net     = $item->gross;
+
+			return;
+		}
+
+		// Set the tax rate to whatever the product's tax rate is, if not already set
+		if (!$item->taxRate) {
+			$item->taxRate = $item->productTaxRate;
+		}
+
+		// Set the gross to the list price minus the discount
+		$item->gross = round($item->listPrice - $item->discount, 2);
+
+		// Calculate tax where the strategy is exclusive
+		if ('exclusive' === $item->taxStrategy) {
+			$item->tax    = round($item->gross * ($item->taxRate / 100), 2);
+			$item->gross += $item->tax;
+		}
+		// Calculate tax where the strategy is inclusive
+		else {
+			$item->tax = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
+		}
+
+		// Set the net value to gross - tax
+		$item->net = round($item->gross - $item->tax, 2);
+	}
+
+	protected function _calculateInclusiveTax($amount, $rate)
+	{
+		return round(($amount / (100 + $rate)) * $rate, 2);
 	}
 }

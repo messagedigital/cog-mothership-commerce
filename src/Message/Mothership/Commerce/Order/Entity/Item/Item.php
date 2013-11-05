@@ -51,7 +51,8 @@ class Item implements EntityInterface
 
 	public function __construct()
 	{
-		$this->authorship = new Authorship;
+		$this->personalisation = new Personalisation;
+		$this->authorship      = new Authorship;
 
 		$this->authorship
 			->disableUpdate()

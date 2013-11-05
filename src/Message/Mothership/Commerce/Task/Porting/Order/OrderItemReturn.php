@@ -44,7 +44,8 @@ class OrderItemReturn extends Porting
 					IFNULL(balancing_payment,0) AS balance,
 					IFNULL(balancing_payment,0) AS calculated_balance,
 					item_price - IFNULL(item_discount,0) AS returned_value,
-					return_destination_id AS return_to_stock_location_id
+					return_destination_id AS return_to_stock_location_id,
+					order_item_return.accepted as accepted,
 				FROM
 					order_item_return
 				JOIN order_item ON (order_item.item_id = order_item_return.item_id)
@@ -76,6 +77,7 @@ class OrderItemReturn extends Porting
 					resolution,
 					balance,
 					calculated_balance,
+					accepted,
 					returned_value,
 					return_to_stock_location_id
 				)
@@ -96,6 +98,7 @@ class OrderItemReturn extends Porting
 					:resolution?,
 					:balance?,
 					:calculated_balance?,
+					:accepted?,
 					:returned_value?,
 					:return_to_stock_location_id?
 				)', (array) $row

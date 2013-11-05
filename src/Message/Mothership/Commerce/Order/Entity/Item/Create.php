@@ -47,8 +47,13 @@ class Create implements DB\TransactionalInterface
 
 	public function create(Item $item)
 	{
-		$item = $this->_eventDispatcher->dispatch(Order\Events::CREATE_ITEM, new Order\Event\ItemEvent($item->order, $item))
-			->getItem();
+		$event = new Order\Event\EntityEvent($item->order, $item);
+		$event->setTransaction($this->_query);
+
+		$item = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE,
+			$event
+		)->getEntity();
 
 		// Set create authorship data if not already set
 		if (!$item->authorship->createdAt()) {
@@ -141,23 +146,27 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
+		$event = new Order\Event\EntityEvent($item->order, $item);
+		$event->setTransaction($this->_query);
+
+		$item = $this->_eventDispatcher->dispatch(
+			Events::CREATE_PRE_PERSONALISATION_INSERTS,
+			$event
+		)->getEntity();
+
 		// Set personalisation data, if defined
-		if ($item->personalisation && !$item->personalisation->isEmpty()) {
+		foreach ($item->personalisation as $name => $value) {
 			$this->_query->add('
 				INSERT INTO
 					order_item_personalisation
 				SET
-					item_id         = :itemID?i,
-					sender_name     = :senderName?sn,
-					recipient_name  = :recipientName?sn,
-					recipient_email = :recipientEmail?sn,
-					message         = :message?sn
+					item_id = :itemID?i,
+					name    = :name?s,
+					value   = :value?sn
 			', array(
-				'itemID'         => $item->id,
-				'senderName'     => $item->personalisation->senderName,
-				'recipientName'  => $item->personalisation->recipientName,
-				'recipientEmail' => $item->personalisation->recipientEmail,
-				'message'        => $item->personalisation->message,
+				'itemID' => $item->id,
+				'name'   => $name,
+				'value'  => $value,
 			));
 		}
 

@@ -35,7 +35,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			Events::BUILD_ORDER_TABS => array(
 				array('registerTabItems'),
 			),
-			Events::CREATE_NOTE => array(
+			Events::ENTITY_CREATE => array(
 				array('sendCustomerNotification'),
 			),
 		);
@@ -82,14 +82,14 @@ class EventListener extends BaseListener implements SubscriberInterface
 	/**
 	 * Send a customer a notification.
 	 *
-	 * @param  Order\Entity\Note\CreateNoteEvent $event
-	 * @return false If the note is not set to notify the customer.
+	 * @param Event\EntityEvent $event
 	 */
-	public function sendCustomerNotification(Note\CreateNoteEvent $event)
+	public function sendCustomerNotification(Event\EntityEvent $event)
 	{
-		$note     = $event->getNote();
+		$note = $event->getEntity();
 
-		if (! $note->customerNotified) {
+		if (!($note instanceof Note\Note)
+		 || !$note->customerNotified) {
 			return;
 		}
 

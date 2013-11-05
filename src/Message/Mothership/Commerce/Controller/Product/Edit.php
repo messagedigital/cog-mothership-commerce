@@ -59,7 +59,7 @@ class Edit extends Controller
 	public function units($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		$this->_units 	= $this->_product->getUnits();
+		$this->_units 	= $this->_product->getAllUnits();
 
 		return $this->render('::product:edit-unit', array(
 			'headings'    => $this->_getAllOptionsAndHeadings(),
@@ -99,7 +99,7 @@ class Edit extends Controller
 		$this->_units = $this->_product->getAllUnits();
 
 		$movementIterator = $this->get('stock.movement.iterator');
-		$movementIterator->addUnits($this->_product->getUnits());
+		$movementIterator->addUnits($this->_product->getAllUnits());
 
 		return $this->render('::product:edit-stock', array(
 			'headings'  	   => $this->_getAllOptionsAndHeadings(),
@@ -131,7 +131,7 @@ class Edit extends Controller
 	public function processUnit($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		$this->_units   = $this->_product->getUnits();
+		$this->_units   = $this->_product->getAllUnits();
 		$form           = $this->_getUnitForm();
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
@@ -312,7 +312,7 @@ class Edit extends Controller
 	{
 		$this->_product 	= $this->get('product.loader')->getByID($productID);
 		$locationCollection = $this->get('stock.locations');
-		$this->_units   	= $this->_product->getUnits();
+		$this->_units   	= $this->_product->getAllUnits();
 		$form           	= $this->_getStockForm($locationCollection->all());
 		$stockManager 		= $this->get('stock.manager');
 
@@ -526,7 +526,7 @@ class Edit extends Controller
 				'allow_add'    => true,
 				'allow_delete' => true
 			)
-		);
+		)->val()->optional();
 
 		return $form;
 	}
@@ -631,12 +631,6 @@ class Edit extends Controller
 				'attr' => array(
 					'data-help-key' => 'ms.commerce.product.units.visible.help'
 				)
-			))
-				->val()
-				->optional();
-
-			$form->add('delete', 'checkbox','', array(
-				'attr' => array('data-help-key' => 'ms.commerce.product.units.delete.help'),
 			))
 				->val()
 				->optional();

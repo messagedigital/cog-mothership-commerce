@@ -29,11 +29,7 @@ class OrderSummary extends Porting
 						WHEN 4 THEN 500
 						WHEN 5 THEN 800
 						WHEN 6 THEN 1000
-						WHEN 9 THEN 1500
-						WHEN 10 THEN 1500
-						WHEN 99 THEN 2100
 						WHEN -2 THEN -300
-						WHEN -1 THEN -100
 						ELSE 1000
 					END AS status_code,
 					order_summary.user_id AS user_id,
