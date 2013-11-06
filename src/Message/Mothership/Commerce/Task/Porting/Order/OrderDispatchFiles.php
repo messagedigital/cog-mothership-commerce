@@ -134,29 +134,6 @@ class OrderDispatchFiles extends Porting
 	<title>Site Admin</title>
 	<style>
 
-
-body {
-	background:#FFF;
-	width:100%;
-}
-#wrapper {
-
-}
-.page {
-	border:none;
-	min-height:100%;
-	_height:100%;
-	page-break-after: always;
-    page-break-inside: avoid;
-}
-.page_last {
-	page-break-after: avoid !important;
-	margin-bottom: 0 !important;
-}
-button {
-	display:none;
-}
-
 /****[ SET UP PRINT DOCUMENT ]*************************/
 
 body {
@@ -480,27 +457,54 @@ dl {
  */
 
 @font-face {
-    font-family: \'Uniform\';
-    src: url(\'fonts/uniform-bold.woff\') format(\'woff\');
+    font-family: "Uniform";
+    src: url("fonts/uniform-bold.woff") format("woff");
 
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
-    font-family: \'Uniform\';
-    src: url(\'fonts/uniform.woff\') format(\'woff\');
+    font-family: "Uniform";
+    src: url("fonts/uniform.woff") format("woff");
 
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: \'Uniform SC\';
-    src: url(\'fonts/uniform_sc.woff\') format(\'woff\');
+    font-family: "Uniform SC";
+    src: url("fonts/uniform_sc.woff") format("woff");
 
     font-weight: normal;
     font-style: normal;
+}
+
+
+body {
+	background:#FFF;
+	width:100%;
+}
+#wrapper {
+
+}
+.page {
+	border:none;
+	min-height:100%;
+	_height:100%;
+	page-break-after: always;
+    page-break-inside: avoid;
+}
+.page_last {
+	page-break-after: avoid !important;
+	margin-bottom: 0 !important;
+}
+button {
+	display:none;
+}
+
+section, header {
+	display: block;
 }
 
 	</style>
