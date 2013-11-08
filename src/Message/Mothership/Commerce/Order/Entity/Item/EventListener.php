@@ -98,7 +98,7 @@ class EventListener implements SubscriberInterface
 
 	protected function _calculateTaxForItem(Item $item)
 	{
-		if (!$item->order->taxable) {
+		if (false === $item->order->taxable) {
 			// Resetting the gross is important because if the tax strategy is
 			// exclusive this will include the tax amount
 			$item->gross = round($item->listPrice - $item->discount, 2);

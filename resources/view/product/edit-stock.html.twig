@@ -3,11 +3,11 @@
 {% block edit %}
 
 	<h1>Stock Adjustments</h1>
-	<div class="dual-column">
-		{{ form_start(form) }}
-		<div class="column">
-			<h2>Adjust Stock</h2>
 
+		{{ form_start(form) }}
+		<div class="display-group">
+			<h2 class="title">Adjust Stock</h2>
+			<div class="content-wrap">
 			<table>
 				<thead>
 					<tr>
@@ -40,19 +40,18 @@
 					{% endfor %}
 				</tbody>
 			</table>
-		</div>
-		<div class="column">
 			<h2>Adjustment Information</h2>
 			{{ form_row(form['reason']) }}
 			{{ form_row(form['note']) }}
 			<button type="submit" class="button small save" id="save-content">
 				{{ 'Update Stock' }}
 			</button>
+			</div>
 		</div>
 		{{ form_end(form) }}
-	</div>
-	<section class="display-group">
 		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
+
+	<section class="display-group">
 
 		{% for movement in movementIterator %}
 
@@ -66,8 +65,7 @@
 					{% endif %}
 				</h2>
 
-		<div class="container-details dual-column">
-		<div class="column">
+		<div class="content-wrap">
 				<table>
 					<thead>
 						<tr>
@@ -110,18 +108,15 @@
 						{% endfor %}
 					</tbody>
 				</table>
-		</div>
-		<div class="column">
+
 				<div>
-					<h2>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h2>
+					<h3>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h3>
 					<p>{{ movement.reason }}
 				</div>
 				<div>
-					<h2>{{ 'ms.commerce.product.stock.note.label'|trans }}</h2>
-					<p>{{ movement.note }}
+					<h3>{{ 'ms.commerce.product.stock.note.label'|trans }}</h3>
+					<p>{{ movement.note }}</p>
 				</div>
-
-		</div>
 	</div>
 		{% endfor %}
 	</section>

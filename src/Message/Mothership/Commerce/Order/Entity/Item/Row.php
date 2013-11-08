@@ -168,6 +168,6 @@ class Row implements \IteratorAggregate, \Countable
 	 */
 	public function getIterator()
 	{
-		return \ArrayIterator($this->_items);
+		return new \ArrayIterator($this->_items);
 	}
 }

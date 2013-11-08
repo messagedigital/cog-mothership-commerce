@@ -100,7 +100,10 @@ class Sagepay extends Wrapper
 	public function handleResponse($responseID)
 	{
 		$data = $this->_cache->fetch($responseID);
-		$this->_cache->delete($responseID);
+
+		if ($this->_cache->exists($responseID)) {
+			$this->_cache->delete($responseID);
+		}
 
 		return unserialize($data);
 	}

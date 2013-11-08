@@ -41,7 +41,7 @@ class Assembler
 		$this->_session           = $session;
 	}
 
-	public function addUnit(Unit $unit, $stockLocation)
+	public function addUnit(Unit $unit, $stockLocation, $fireEvent = true)
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
@@ -50,10 +50,10 @@ class Assembler
 
 		$item->stockLocation = $stockLocation;
 
-		return $this->addItem($item);
+		return $this->addItem($item, $fireEvent);
 	}
 
-	public function addItem(Entity\Item\Item $item)
+	public function addItem(Entity\Item\Item $item, $fireEvent = true)
 	{
 		$item->order = $this->_order;
 
@@ -63,24 +63,28 @@ class Assembler
 
 		$this->_order->items->append($item);
 
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			new Event($this->_order)
-		);
+		if ($fireEvent) {
+			$this->_eventDispatcher->dispatch(
+				Events::ASSEMBLER_UPDATE,
+				new Event($this->_order)
+			);
+		}
 
 		return $this;
 	}
 
-	public function removeItem(Item $item)
+	public function removeItem(Item $item, $fireEvent = true)
 	{
 		$this->_order->items->remove($item);
 
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			$event
-		);
+		if ($fireEvent) {
+			$event = new Event($this->_order);
+			// Dispatch the edit event
+			$this->_eventDispatcher->dispatch(
+				Events::ASSEMBLER_UPDATE,
+				$event
+			);
+		}
 
 		return $this;
 	}
@@ -101,7 +105,7 @@ class Assembler
 		// quantity
 		if ($quantity < $unitCount) {
 			for ($i = $unitCount ; $i > $quantity; $i--) {
-				$this->removeItem(array_shift($items));
+				$this->removeItem(array_shift($items), false);
 			}
 		}
 
@@ -110,7 +114,7 @@ class Assembler
 		if ($quantity > $unitCount) {
 			$item = array_shift($items);
 			for ($i = $unitCount; $i < $quantity; $i++) {
-				$this->addUnit($unit, $item->stockLocation);
+				$this->addUnit($unit, $item->stockLocation, false);
 			}
 		}
 

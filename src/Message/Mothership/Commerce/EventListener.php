@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 use Message\Mothership\Commerce\Order\Event;
-use Message\Mothership\Commerce\Order\Entity\Note;
 
 /**
  * Event listener for core Mothership Commerce functionality.
@@ -34,9 +33,6 @@ class EventListener extends BaseListener implements SubscriberInterface
 			),
 			Events::BUILD_ORDER_TABS => array(
 				array('registerTabItems'),
-			),
-			Events::ENTITY_CREATE => array(
-				array('sendCustomerNotification'),
 			),
 		);
 	}
@@ -77,37 +73,5 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$event->addItem('ms.commerce.order.detail.view.dispatches', 'ms.commerce.order.dispatch.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.notes', 		'ms.commerce.order.note.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.documents', 	'ms.commerce.order.document.listing-title');
-	}
-
-	/**
-	 * Send a customer a notification.
-	 *
-	 * @param Event\EntityEvent $event
-	 */
-	public function sendCustomerNotification(Event\EntityEvent $event)
-	{
-		$note = $event->getEntity();
-
-		if (!($note instanceof Note\Note)
-		 || !$note->customerNotified) {
-			return;
-		}
-
-		$order    = $event->getOrder();
-		$merchant = $this->get('cfg')->merchant;
-
-		$message = $this->get('mail.message');
-
-		$message->setTo($order->user->email, $order->user->getName());
-		$message->setSubject('Updates to your ' . $merchant->companyName . ' order ' . $order->orderID);
-		$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(
-			'note'     => $note,
-			'order'    => $order,
-			'merchant' => $merchant,
-		));
-
-		$dispatcher = $this->get('mail.dispatcher');
-
-		$dispatcher->send($message);
 	}
 }
