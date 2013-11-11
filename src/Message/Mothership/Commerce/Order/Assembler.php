@@ -140,6 +140,13 @@ class Assembler
 		);
 	}
 
+	public function setType($type)
+	{
+		$this->_order->type = $type;
+
+		return $this;
+	}
+
 	public function getItemQuantity(Unit $unit)
 	{
 		return $this->_countForUnitID($unit);

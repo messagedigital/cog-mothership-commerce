@@ -125,21 +125,24 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 		$sellLocation = $locations->getRoleLocation($locations::SELL_ROLE);
 		$addFlash     = false;
 
-		foreach ($order->items->getRows() as $row) {
-			$unit  = $unitLoader->getByID($row->first()->unitID);
-			$stock = $unit->getStockForLocation($sellLocation);
+		// @todo Quick fix to stop it taking items out of repairs. This will need changing!
+		if ($order->type == 'web') {
+			foreach ($order->items->getRows() as $row) {
+				$unit  = $unitLoader->getByID($row->first()->unitID);
+				$stock = $unit->getStockForLocation($sellLocation);
 
-			if ($row->getQuantity() > $stock) {
-				$amountToRemove = $row->getQuantity() - $stock;
-				$addFlash       = true;
+				if ($row->getQuantity() > $stock) {
+					$amountToRemove = $row->getQuantity() - $stock;
+					$addFlash       = true;
 
-				foreach ($row as $item) {
-					if ($amountToRemove < 1) {
-						break;
+					foreach ($row as $item) {
+						if ($amountToRemove < 1) {
+							break;
+						}
+
+						$order->items->remove($item);
+						$amountToRemove--;
 					}
-
-					$order->items->remove($item);
-					$amountToRemove--;
 				}
 			}
 		}

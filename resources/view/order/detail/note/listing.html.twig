@@ -2,21 +2,25 @@
 
 {% block order_content %}
 	<section class="container-content">
-		<section class=" display-group">
-
+		<section class="display-group">
+			<h2 class="title">Notes</h2>
+			<div class="content-wrap">
 			{% if not notes is empty %}
 				{% for note in notes %}
 					{% include '::order:detail:note:detail' %}
 				{% endfor %}
 			{% else %}
-				{{ 'ms.commerce.order.note.none'|trans }}
+				<p>{{ 'ms.commerce.order.note.none'|trans }}</p>
 			{% endif %}
+			</div>
+		</section>
 
+		<section class="display-group">
 			<h2 class="title">{{ 'ms.commerce.order.note.create.title'|trans }}</h2>
 			<div class="content-wrap">
 				{{ form_start(createNoteForm) }}
 					{{ form_rest(createNoteForm) }}
-					<button type="submit" class="button save">{{ 'ms.commerce.order.note.create.button'|trans }}</button>
+					<button type="submit" class="button save small">{{ 'ms.commerce.order.note.create.button'|trans }}</button>
 				{{ form_end(createNoteForm) }}
 			</div>
 
