@@ -30,7 +30,7 @@
 					</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
 					<td>{{ form_widget(form[unit.id]['visible']) }}</td>
-					<td><a class="button delete small" href="{{ url('ms.commerce.product.unit.delete', {productID: unit.product.id, unitID: unit.id})}}">Delete</a></td>
+					<td><a class="button delete small" href="{{ url('ms.commerce.product.unit.delete', {productID: unit.product.id, unitID: unit.id})}}" data-confirm="Are you sure you want to delete this unit?">Delete</a></td>
 				</tr>
 			{% endfor %}
 		</tbody>

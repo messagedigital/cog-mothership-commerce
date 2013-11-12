@@ -191,6 +191,22 @@ class Loader
 		return $this->_load(array_unique($result->flatten()), true);
 	}
 
+	public function getByTrackingCode($code)
+	{
+		$result = $this->_query->run('
+			SELECT
+				os.order_id
+			FROM
+				order_summary os
+			LEFT JOIN
+				order_dispatch od ON os.order_id = od.order_id
+			WHERE
+				od.code = ?s
+		', $code);
+
+		return $this->_load($result->flatten(), true);
+	}
+
 	protected function _load($ids, $returnArray = false)
 	{
 		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';

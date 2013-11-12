@@ -77,14 +77,16 @@ class Edit implements DB\TransactionalInterface
 			UPDATE
 				order_dispatch
 			SET
-				code = :code?s,
-				cost = :cost?fn
+				code       = :code?s,
+				cost       = :cost?fn,
+				address_id = :addressID?i,
 			WHERE
 				dispatch_id = :id?i
 		', array(
-			'code' => $dispatch->code,
-			'cost' => $dispatch->cost,
-			'id'   => $dispatch->id,
+			'code'       => $dispatch->code,
+			'cost'       => $dispatch->cost,
+			'addressID'  => $dispatch->order->getAddress('delivery')->id,
+			'id'         => $dispatch->id,
 		));
 
 		return $dispatch;

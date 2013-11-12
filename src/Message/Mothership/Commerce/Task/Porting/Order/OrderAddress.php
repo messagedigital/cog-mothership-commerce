@@ -41,6 +41,16 @@ class OrderAddress extends Porting
 		$result = $old->run($sql);
 		$output= '';
 
+		$authorshipSQL = '
+			SELECT
+				order_id,
+				UNIX_TIMESTAMP(order_summary.order_datetime) AS created_at,
+				user_id AS created_by
+			FROM
+				order_summary
+		';
+		$authorshipResults = $old->run($authorshipSQL);
+
 		$new->add('TRUNCATE order_address');
 
 		foreach($result as $row) {
@@ -118,6 +128,16 @@ class OrderAddress extends Porting
 				)
 			);
 		}
+
+		$new->add('
+			UPDATE
+				order_address
+			LEFT JOIN
+				order_summary ON order_address.order_id = order_summary.order_id
+			SET
+				order_address.created_at = order_summary.created_at,
+				order_address.created_by = order_summary.created_by;
+		');
 
 		if ($new->commit()) {
         	$this->writeln('<info>Successfully ported order addresses</info>');

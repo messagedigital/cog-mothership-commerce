@@ -3,8 +3,9 @@
 namespace Message\Mothership\Commerce\Order\Entity\Address;
 
 use Message\Mothership\Commerce\Order;
-
 use Message\Cog\DB;
+use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\User\UserInterface;
 
 /**
  * Order address creator.
@@ -15,11 +16,13 @@ class Create implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_loader;
+	protected $_currentUser;
 
-	public function __construct(DB\Query $query, Loader $loader)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
 	{
-		$this->_query  = $query;
-		$this->_loader = $loader;
+		$this->_query       = $query;
+		$this->_loader      = $loader;
+		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -29,11 +32,21 @@ class Create implements DB\TransactionalInterface
 
 	public function create(Address $address)
 	{
+		// Set create authorship data if not already set
+		if (!$address->authorship->createdAt()) {
+			$address->authorship->create(
+				new DateTimeImmutable,
+				$this->_currentUser->id
+			);
+		}
+
 		$result = $this->_query->run('
 			INSERT INTO
 				order_address
 			SET
 				order_id   = :orderID?i,
+				created_at = :createdAt?d,
+				created_by = :createdBy?in,
 				type       = :type?s,
 				title      = :title?sn,
 				forename   = :forename?sn,
@@ -51,6 +64,8 @@ class Create implements DB\TransactionalInterface
 				state      = :state?sn
 		', array(
 			'orderID'   => $address->order->id,
+			'createdAt' => $address->authorship->createdAt(),
+			'createdBy' => $address->authorship->createdBy(),
 			'type'      => $address->type,
 			'title'     => $address->title,
 			'forename'  => $address->forename,

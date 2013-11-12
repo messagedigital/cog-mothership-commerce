@@ -63,6 +63,8 @@ class Loader extends Order\Entity\BaseLoader
 				order_address
 			WHERE
 				address_id IN (?ij)
+			ORDER BY
+				created_at DESC
 		', array($ids));
 
 		if (0 === count($result)) {

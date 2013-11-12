@@ -54,14 +54,26 @@ class Listing extends Controller
 	{
 		$form = $this->_getSearchForm();
 		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$orderID = $data['term'];
+			$term = $data['term'];
 
-			$order = $this->get('order.loader')->getById($orderID);
+			$order = $this->get('order.loader')->getById($term);
 
 			if ($order) {
 				return $this->redirectToRoute('ms.commerce.order.detail.view', array('orderID' => $order->id));
 			} else {
-				$this->addFlash('warning', sprintf('No search results were found for "%s"', $orderID));
+
+				// If search did not match an ID instead look for a tracking code match.
+				$orders = $this->get('order.loader')->getByTrackingCode($term);
+
+				if (count($orders)) {
+					return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
+						'orders' => $orders,
+						'heading' => sprintf('Orders matching tracking code "%s"', $term),
+					));
+				}
+
+				// If there were no matches return the error
+				$this->addFlash('warning', sprintf('No search results were found for "%s"', $term));
 				return $this->redirectToReferer();
 			}
 		}
