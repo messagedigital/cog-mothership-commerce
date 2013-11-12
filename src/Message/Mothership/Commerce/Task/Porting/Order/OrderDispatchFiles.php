@@ -28,6 +28,8 @@ class OrderDispatchFiles extends Porting
 			AND despatch_timestamp IS NOT NULL'
 		);
 
+		$new->add('TRUNCATE order_document');
+
 		$documentSql = '
 				INSERT INTO
 					order_document
@@ -52,7 +54,7 @@ class OrderDispatchFiles extends Porting
 			$dirs = array(
 				'cog://data/order',
 				'cog://data/order/picking',
-				'cog://data/order/picking/' . $row->created_at,
+				'cog://data/order/picking/' . date('Ymd', $row->created_at),
 			);
 			// Create the directory
 			$fileDestination = array_pop($dirs);
@@ -60,13 +62,16 @@ class OrderDispatchFiles extends Porting
 			// Set the details for the packing slip
 			$filename = $row->order_id . '_packing-slip';
 			$contents = (string) $this->getHtml($row->slip);
-			$path     = $fileDestination . '/' . $filename . '.html';
+			$path     = $fileDestination . '/' . $filename . '.pdf';
 
 			$manager = $this->get('filesystem.stream_wrapper_manager');
 			$handler = $manager::getHandler('cog');
 			$path    = $handler->getLocalPath($path);
-			// Save the file
-			$this->get('filesystem')->dumpFile($path, $contents);
+
+			// Convert file to pdf
+			$converter = $this->get('filesystem.conversion.pdf');
+			$converter->setHtml($contents);
+			$file = $converter->save($path);
 
 			$new->add($documentSql, array(
 				'order_id' => $row->order_id,
@@ -128,29 +133,6 @@ class OrderDispatchFiles extends Porting
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Site Admin</title>
 	<style>
-
-
-body {
-	background:#FFF;
-	width:100%;
-}
-#wrapper {
-
-}
-.page {
-	border:none;
-	min-height:100%;
-	_height:100%;
-	page-break-after: always;
-    page-break-inside: avoid;
-}
-.page_last {
-	page-break-after: avoid !important;
-	margin-bottom: 0 !important;
-}
-button {
-	display:none;
-}
 
 /****[ SET UP PRINT DOCUMENT ]*************************/
 
@@ -475,27 +457,54 @@ dl {
  */
 
 @font-face {
-    font-family: \'Uniform\';
-    src: url(\'fonts/uniform-bold.woff\') format(\'woff\');
+    font-family: "Uniform";
+    src: url("fonts/uniform-bold.woff") format("woff");
 
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
-    font-family: \'Uniform\';
-    src: url(\'fonts/uniform.woff\') format(\'woff\');
+    font-family: "Uniform";
+    src: url("fonts/uniform.woff") format("woff");
 
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: \'Uniform SC\';
-    src: url(\'fonts/uniform_sc.woff\') format(\'woff\');
+    font-family: "Uniform SC";
+    src: url("fonts/uniform_sc.woff") format("woff");
 
     font-weight: normal;
     font-style: normal;
+}
+
+
+body {
+	background:#FFF;
+	width:100%;
+}
+#wrapper {
+
+}
+.page {
+	border:none;
+	min-height:100%;
+	_height:100%;
+	page-break-after: always;
+    page-break-inside: avoid;
+}
+.page_last {
+	page-break-after: avoid !important;
+	margin-bottom: 0 !important;
+}
+button {
+	display:none;
+}
+
+section, header {
+	display: block;
 }
 
 	</style>
