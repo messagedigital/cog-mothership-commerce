@@ -79,7 +79,7 @@ class Edit implements DB\TransactionalInterface
 			SET
 				code       = :code?s,
 				cost       = :cost?fn,
-				address_id = :addressID?i,
+				address_id = :addressID?i
 			WHERE
 				dispatch_id = :id?i
 		', array(

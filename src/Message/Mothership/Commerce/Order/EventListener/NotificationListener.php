@@ -7,6 +7,7 @@ use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
  * Order event listener for sending customer notifications.
@@ -22,9 +23,22 @@ class NotificationListener extends BaseListener implements SubscriberInterface
 	{
 		return array(
 			OrderEvents::DISPATCH_SHIPPED => array(
+				array('triggerSendEvent')
+			),
+			OrderEvents::DISPATCH_NOTIFICATION => array(
 				array('sendDispatchShippedNotification'),
 			),
 		);
+	}
+
+	/**
+	 * Separate event for notification and shipping, so that they can be treated separately in certain scenarios
+	 *
+	 * @param Event\DispatchEvent $event
+	 */
+	public function triggerSendEvent(Event\DispatchEvent $event)
+	{
+		$event->getDispatcher()->dispatch(OrderEvents::DISPATCH_NOTIFICATION, $event);
 	}
 
 	/**
