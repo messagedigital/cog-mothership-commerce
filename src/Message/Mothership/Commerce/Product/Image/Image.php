@@ -15,9 +15,12 @@ class Image implements ResizableInterface
 	public $type;
 	public $locale;
 	public $file;
+	public $fileID;
 	public $options = array();
 
 	public $product;
+
+	protected $_fileLoader;
 
 	public function __construct()
 	{
@@ -46,6 +49,18 @@ class Image implements ResizableInterface
 		}
 
 		return $this->file->getAltText();
+	}
+
+	public function setFileLoader($fileLoader)
+	{
+		$this->_fileLoader = $fileLoader;
+	}
+
+	public function __get($key)
+	{
+		if ('file' == $key) {
+			return $this->_fileLoader->getByID($this->fileID);
+		}
 	}
 
 	public function __sleep()

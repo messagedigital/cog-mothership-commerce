@@ -248,7 +248,10 @@ class Loader
 				$image->type    = $imageData->type;
 				$image->product = $products[$key];
 				$image->locale  = $imageData->locale;
-				$image->file    = $this->_fileLoader->getByID($imageData->fileID);
+
+				// $image->file    = $this->_fileLoader->getByID($imageData->fileID);
+				$image->setFileLoader($this->_fileLoader);
+				$image->fileID  = $imageData->fileID;
 
 				$image->authorship->create(
 					new DateTimeImmutable(date('c', $imageData->createdAt)),
