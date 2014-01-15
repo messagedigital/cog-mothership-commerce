@@ -5,17 +5,11 @@
 {% endblock %}
 
 {% block main %}
-
-<hgroup class="title">
-	<h1>
-		{{ title is defined ? title : 'Editing ' ~ product.name }}
-	</h1>
-</hgroup>
-
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
-
-<section class="container-content">
-{% block edit %} {% endblock %}
-</section>
-
+	<hgroup class="title">
+		<h1>{{ title is defined ? title : product.name }}</h1>
+	</hgroup>
+	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
+	<section class="container-content medium">
+		{% block edit %} {% endblock %}
+	</section>
 {% endblock %}

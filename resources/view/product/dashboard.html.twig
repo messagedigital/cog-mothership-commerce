@@ -1,9 +1,7 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-
 {% block sidebar %}
 	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
 {% endblock %}
-
 {% block main %}
 	<div class="dashboard">
 		<h1>Dashboard</h1>

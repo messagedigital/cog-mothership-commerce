@@ -8,30 +8,19 @@
 			<th><span>Discount</span></th>
 			<th><span>Tax</span></th>
 			<th><span>Gross</span></th>
-			{% if moduleExists('Message\\Mothership\\OrderReturn') %}
-				<th><span>Return</span></th>
-			{% endif %}
 		</tr>
 		</thead>
 		<tbody>
 			{% for item in items %}
 				<tr>
-					<td class="left">{{ item.brand }} {{ item.productName }} (SKU: {{ item.sku }}) &mdash; {{ item.options }}  </td>
+					<td class="left">{{ item.brand }}, {{ item.productName }}, {{ item.options }}  </td>
 					<td>{{ item.net|price(order.currencyID) }}</td>
 					<td>{{ item.discount|price(order.currencyID) }}</td>
 					<td>{{ item.tax|price(order.currencyID) }}</td>
 					<td>{{ item.gross|price(order.currencyID) }}</td>
-					{% if moduleExists('Message\\Mothership\\OrderReturn') %}
-						<td>
-							{% if despatchedStatus is defined and item.status.code ==  despatchedStatus %}
-							<a href="{{ url('ms.user.return.create',{itemID: item.id}) }}">Return</a>
-							{% endif %}
-						</td>
-					{% endif %}
 				</tr>
 			{% endfor %}
 		</tbody>
-	</table>
 {% else %}
 	<p>{{ 'ms.commerce.order.item.none'|trans }}</p>
 {% endif %}

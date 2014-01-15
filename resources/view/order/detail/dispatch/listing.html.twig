@@ -1,16 +1,13 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-
-	<section class="container-content">
-
-				{% if not dispatches is empty %}
-					{% for dispatch in dispatches %}
-						{% include '::order:detail:dispatch:detail' %}
-					{% endfor %}
-				{% else %}
-					<p>{{ 'ms.commerce.order.dispatch.none'|trans }}</p>
-				{% endif %}
-
+	<section class="container-content short">
+		{% if not dispatches is empty %}
+			{% for dispatch in dispatches %}
+				{% include '::order:detail:dispatch:detail' %}
+			{% endfor %}
+		{% else %}
+			<p>{{ 'ms.commerce.order.dispatch.none'|trans }}</p>
+		{% endif %}
 	</section>
 {% endblock %}

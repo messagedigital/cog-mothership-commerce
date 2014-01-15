@@ -1,19 +1,12 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-
 {% block sidebar %}
 	{{ render(controller('Message:Mothership:Commerce::Controller:Order:OrderDetail#sidebar', { 'orderID': order.id } )) }}
 {% endblock %}
- 
 {% block main %}
-
-
 	<hgroup class="title">
-		<h1>{{ 'Order'|trans }} {{ order.id }}: {{ order.status }} <span class="updated-date">(Last updated: {{ order.authorship.updatedAt|date }})</span></h1>
+		<h1>{{ 'Order'|trans }} {{ order.id }} <span class="updated-date">Placed: {{ order.authorship.createdAt|date }}</span></h1>
 	</hgroup>
-
 	{{ render(controller('Message:Mothership:Commerce::Controller:Order:OrderDetail#tabs', { 'orderID': order.id } )) }}
-	
 	{% block order_content %}
 	{% endblock %}
-
 {% endblock %}

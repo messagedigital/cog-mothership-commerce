@@ -1,44 +1,33 @@
-
-<section class="display-group">
-<h2 class="title">
-			{{ dispatch.method.displayName|title }},
-			{{ 'Created by'|trans }} {{ dispatch.authorship.createdBy }}
-			{{ 'at'|trans }} {{ dispatch.authorship.createdAt|date }}
-		</h2>
-
-<div class="container-details dual-column">
-
-
-	<div class="column">
-<h2>Shipping Details</h2>
-		<ul class="order-details">
-			<li>
-				<span>{{ 'Shipped by'|trans }}</span>
-				{{ dispatch.shippedBy }}
-			</li>
-			<li>
-				<span>{{ 'Shipped on'|trans }}</span>
-				{{ dispatch.shippedAt|date }}
-			</li>
-			<li>
-				<span>{{ 'ms.commerce.order.dispatch.code'|trans }}</span>
-				{{ dispatch.code }}
-			</li>
-			<li>
-				<span>{{ 'ms.commerce.order.dispatch.cost'|trans }}</span>
-				{{ dispatch.cost|price(order.currencyID) }}
-			</li>
-			<li>
-				<span>{{ 'ms.commerce.order.dispatch.weight'|trans }}</span>
-				{{ dispatch.weight }}
-			</li>
-		</ul>
-	</div>
+<section class="dual-column">
+	<h1 class="title">
+		{{ dispatch.method.displayName|title }},
+		{{ 'Created by'|trans }} {{ dispatch.authorship.createdBy }}
+		{{ 'at'|trans }} {{ dispatch.authorship.createdAt|date }}
+	</h1>
+	<div class="content">
+		<div class="column">
+			<h2>Shipping Details</h2>
+			<dl class="order-details">
+				<dt>{{ 'Shipped by'|trans }}</dt>
+					<dd>{{ dispatch.shippedBy }}</dd>
+				<dt>{{ 'Shipped on'|trans }}</dt>
+					<dd>{{ dispatch.shippedAt|date }}</dd>
+				<dt>{{ 'ms.commerce.order.dispatch.code'|trans }}</dt>
+					<dd>{{ dispatch.code }}</dd>
+				<dt>{{ 'ms.commerce.order.dispatch.cost'|trans }}</dt>
+					<dd>{{ dispatch.cost|price(order.currencyID) }}</dd>
+				<dt>{{ 'ms.commerce.order.dispatch.weight'|trans }}</dt>
+					<dd>{{ dispatch.weight }}</dd>
+			</dl>
+		</div>
 		<div class="column">
 			{% set items = dispatch.items %}
-
 			{% include 'Message:Mothership:Commerce::order:detail:item:summary' %}
 		</div>
-
-</div>
+	</div>
 </section>
+
+
+
+
+

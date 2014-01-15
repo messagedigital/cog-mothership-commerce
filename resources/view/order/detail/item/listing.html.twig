@@ -1,16 +1,13 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-
-	<section class="container-content">
-		<section class="display-group">
-			{% if not items is empty %}
-				{% for item in items %}
-					{% include '::order:detail:item:detail' %}
-				{% endfor %}
-			{% else %}
-				<p>{{ 'ms.commerce.order.item.none'|trans }}</p>
-			{% endif %}
-		</section>
+	<section class="container-content short">
+		{% if not items is empty %}
+			{% for item in items %}
+				{% include '::order:detail:item:detail' %}
+			{% endfor %}
+		{% else %}
+			<p>{{ 'ms.commerce.order.item.none'|trans }}</p>
+		{% endif %}
 	</section>
 {% endblock %}

@@ -40,24 +40,18 @@
 	</button>
 	{{ form_end(form) }}
 
-<div class="display-group">
+<div class="group">
 	<h2 class="title">Add Unit</h2>
-
-	<div class="content-wrap">
-
-
-	{{ form_start(addForm) }}
-
-	{{ form_row(addForm.sku) }}
-
-	{{ option.renderRepeatable(addForm.options) }}
-
-	{{ form_rest(addForm) }}
-	<button type="submit" class="button small submit">
-		{{ 'ms.commerce.product.button.sku'|trans }}
-	</button>
-
-	{{ form_end(addForm) }}
+	<div class="content">
+		{{ form_start(addForm) }}
+			{{ form_row(addForm.sku) }}
+			{{ option.renderRepeatable(addForm.options) }}
+			{{ form_rest(addForm) }}
+			<button type="submit" class="button small update">
+				{{ 'ms.commerce.product.button.sku'|trans }}
+			</button>
+		{{ form_end(addForm) }}
+	</div>
 </div>
 </div>
 

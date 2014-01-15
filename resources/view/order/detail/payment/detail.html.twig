@@ -1,30 +1,21 @@
-	<section class="display-group">
-
-		<h2 class="title">
-			{{ payment.method.displayName }},
-			Created by {{ payment.authorship.createdBy }}
-			at {{ payment.authorship.createdAt|date }}
-		</h2>
-				<div class="content-wrap">
-		<ul class="order-details">
+<section class="group">
+	<h2 class="title">
+		{{ payment.method.displayName }},
+		Created by {{ payment.authorship.createdBy }}
+		at {{ payment.authorship.createdAt|date }}
+	</h2>
+	<div class="content">
+		<dl class="order-details">
 			{% if not payment.return is empty %}
-				<li>
-					<span>{{ 'ms.commerce.order.payment.return'|trans }}</span>
-					{{ payment.return }}
-				</li>
+				<dt>{{ 'ms.commerce.order.payment.return'|trans }}</dt>
+					<dd>{{ payment.return }}</dd>
 			{% endif %}
-			<li>
-				<span>{{ 'ms.commerce.order.payment.method'|trans }}</span>
-				{{ payment.method.displayName }}
-			</li>
-			<li>
-				<span>{{ 'ms.commerce.order.payment.amount'|trans }}</span>
-				{{ payment.amount|price(order.currencyID) }}
-			</li>
-			<li>
-				<span>{{ 'ms.commerce.order.payment.reference'|trans }}</span>
-				{{ payment.reference }}
-			</li>
-		</ul>
-</div>
+			<dt>{{ 'ms.commerce.order.payment.method'|trans }}</dt>
+				<dd>{{ payment.method.displayName }}</dd>
+			<dt>{{ 'ms.commerce.order.payment.amount'|trans }}</dt>
+				<dd>{{ payment.amount|price(order.currencyID) }}</dd>
+			<dt>{{ 'ms.commerce.order.payment.reference'|trans }}</dt>
+				<dd>{{ payment.reference }}</dd>
+		</dl>
+	</div>
 </section>

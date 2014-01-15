@@ -1,13 +1,11 @@
-<h2 class="title">Created by {{ document.authorship.createdBy }} at {{ document.authorship.createdAt|date }}</h2>
-<div class="content-wrap">
-	<ul class="order-details">
-		<li>
-			<span>Document</span>
-			<a href="{{ url('ms.commerce.order.document.print', {documentID: document.id}) }}">Print</a>
-		</li>
-		<li>
-			<span>Type</span>
-			{{ document.type }}
-		</li>
-	</ul>
-</div>
+<section class="group">
+	<h2 class="title">Created by {{ document.authorship.createdBy }} at {{ document.authorship.createdAt|date }}</h2>
+	<div class="content">
+		<dl class="order-details">
+			<dt>Document</dt>
+				<dd><a href="{{ url('ms.commerce.order.document.print', {documentID: document.id}) }}">Print</a></dd>
+			<dt>Type</dt>
+				<dd>{{ document.type }}</dd>
+		</dl>
+	</div>
+</section>

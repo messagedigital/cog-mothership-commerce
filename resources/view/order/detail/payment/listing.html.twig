@@ -1,16 +1,13 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-
-	<section class="container-content">
-
-			{% if not payments is empty %}
-				{% for payment in payments %}
-					{% include '::order:detail:payment:detail' %}
-				{% endfor %}
-			{% else %}
-				{{ 'ms.commerce.order.payment.none'|trans }}
-			{% endif %}
-
+	<section class="container-content short">
+		{% if not payments is empty %}
+			{% for payment in payments %}
+				{% include '::order:detail:payment:detail' %}
+			{% endfor %}
+		{% else %}
+			<p>{{ 'ms.commerce.order.payment.none'|trans }}</p>
+		{% endif %}
 	</section>
 {% endblock %}

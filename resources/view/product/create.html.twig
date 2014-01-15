@@ -1,21 +1,16 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-
 {% block sidebar %}
 	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
 {% endblock %}
-
 {% block main %}
-
 <hgroup class="title">
-	<h1>Create a product</h1>
+	<h1>Add a new product</h1>
 </hgroup>
-
 <div class="container-content create-product">
 	{{ form_start(form) }}
 		{{ form_row(form.name) }}
 		{{ form_row(form.display_name) }}
 		{{ form_row(form.short_description) }}
-
 		<button type="submit" class="button small save" id="save-content">
 			{{ 'ms.commerce.product.button.create'|trans }}
 		</button>

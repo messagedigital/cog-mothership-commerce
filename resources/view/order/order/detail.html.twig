@@ -1,81 +1,72 @@
+<div class="group-grid">
+	<div class="row">
+		<section class="group">
+			<h2 class="title">Billing Total</h2>
+			<div class="content">
+				<dl class="order-details">
+					<dt>Subtotal</dd>
+						<dd>{{ order.productGross|price(order.currencyID) }} <em>(Tax: {{ order.productTax|price(order.currencyID) }})</em> </dd>
+					<dt>Discount</dt>
+						<dd>{{ order.totalDiscount|price(order.currencyID) }} </dd>
+					<dt>Shipping</dt>
+						<dd>{{ order.shippingGross|price(order.currencyID) }} <em>({{ order.shippingDisplayName }})</em></dd>
+					<dt>Grand Total</dt>
+						<dd>{{ order.totalGross|price(order.currencyID) }} </dd>
+					<dt>Currency</dt>
+						<dd>{{ order.currencyID }} <em>(Conversion Rate: {{ order.conversionRate }})</em></dd>
+				</dl>
+			</div>
+		</section>
+		<section class="group">
+			<h2 class="title">Delivery Address</h2>
+			<div class="content">
+				{% set address = order.addresses.getByType('delivery') %}
+				<dl class="order-details">
+					<dt>{{ 'ms.commerce.order.address.name'|trans }}</dt>
+						<dd><a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
+							{{ address.title }} {{ address.forename }} {{ address.surname }}
+						</a></dd>
+					<dt>{{ 'ms.commerce.order.order.user-email'|trans }}</dt>
+						<dd>{{ order.userEmail }}</dd>
+					{% for key, line in address.lines %}
+						{% if not line is empty %}
+							<dt>{{ 'ms.commerce.order.address.line'|trans({'number': key}) }}</dt>
+								<dd>{{ line }}</dd>
+						{% endif %}
+					{% endfor %}
 
-
-<div class="small-box-row">
-	<section class="group small-box">
-		<h2 class="title">Billing Total</h2>
-		<ul class="order-details">
-			<li><span>Subtotal</span> {{ order.productGross|price(order.currencyID) }} <em>(Tax: {{ order.productTax|price(order.currencyID) }})</em> </li>
-			<li><span>Discount</span> {{ order.totalDiscount|price(order.currencyID) }} </li>
-			<li><span>Shipping</span> {{ order.shippingGross|price(order.currencyID) }} <em>({{ order.shippingDisplayName }})</em></li>
-			<li class="grand-total"><span>Grand Total</span> {{ order.totalGross|price(order.currencyID) }} </li>
-			<li><span>Currency</span> {{ order.currencyID }} <em>(Conversion Rate: {{ order.conversionRate }})</em></li>
-
-		</ul>
-	</section>
-
-	<section class="group small-box">
-		<h2 class="title">Delivery Address</h2>
-		{% set address = order.addresses.getByType('delivery') %}
-		<ul class="order-details">
-			<li>
-				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
-				<a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
-					{{ address.title }} {{ address.forename }} {{ address.surname }}
-				</a>
-			</li>
-			<li>
-				<span>{{ 'ms.commerce.order.order.user-email'|trans }}</span>
-				{{ order.userEmail }}
-			</li>
-			{% for key, line in address.lines %}
-				{% if not line is empty %}
-					<li>
-						<span>{{ 'ms.commerce.order.address.line'|trans({'number': key}) }}</span>
-						{{ line }}
-					</li>
-				{% endif %}
-			{% endfor %}
-
-				<li><span>{{ 'ms.commerce.order.address.town'|trans }}</span>
-				{{ address.town }}
-			</li>
-				<li>
-				<span>{{ 'ms.commerce.order.address.postcode'|trans }}</span>
-				{{ address.postcode }} </li>
-			{% if not address.state is empty %}
-				<li>
-					<span>{{ 'ms.commerce.order.address.state'|trans }}</span>
-					{{ address.state }}
-				</li>
-			{% endif %}
-			<li>
-				<span>{{ 'ms.commerce.order.address.country'|trans }}</span>
-				{{ address.country }}
-			</li>
-			{% if not address.telephone is empty %}
-				<li>
-					<span>{{ 'ms.commerce.order.address.telephone'|trans }}</span>
-					{{ address.telephone }}
-				</li>
-			{% endif %}
-		</ul>
-	</section>
-
-	<section class="group small-box">
-		<h2 class="title">Information</h2>
-		<ul class="order-details">
-			<li>
-				<span>{{ 'Created by'|trans }}</span>
-				<a href="{{ url('ms.cp.user.admin.detail.edit', {userID: order.authorship.createdBy}) }}">
-					{{ order.authorship.createdUser.name }}
-				</a>
-			</li>
-			<li>
-				<span>{{ 'ms.commerce.order.order.user-email'|trans }}</span>
-				{{ order.authorship.createdUser.email }}
-			</li>
-			<li><span>{{ 'Created at'|trans }}</span> {{ order.authorship.createdAt|date }}</li>
-		</ul>
-	</section>
+						<dt>{{ 'ms.commerce.order.address.town'|trans }}</dt>
+							<dd>{{ address.town }}</dd>
+						<dt>{{ 'ms.commerce.order.address.postcode'|trans }}</dt>
+							<dd>{{ address.postcode }}</dd>
+					{% if not address.state is empty %}
+						<dt>{{ 'ms.commerce.order.address.state'|trans }}</dt>
+							<dd>{{ address.state }}</dd>
+					{% endif %}
+					<dt>{{ 'ms.commerce.order.address.country'|trans }}</dt>
+						<dd>{{ address.country }}</dd>
+					{% if not address.telephone is empty %}
+						<dt>{{ 'ms.commerce.order.address.telephone'|trans }}</dt>
+							<dd>{{ address.telephone }}</dd>
+					{% endif %}
+				</dl>
+			</div>
+		</section>
+		<section class="group">
+			<h2 class="title">Order Creation</h2>
+			<div class="content">
+				<dl class="order-details">
+					<dt>{{ 'Created by'|trans }}</dt>
+						<dd><a href="{{ url('ms.cp.user.admin.detail.edit', {userID: order.authorship.createdBy}) }}">
+							{{ order.authorship.createdUser.name }}
+						</a></dd>
+					<dt>{{ 'ms.commerce.order.order.user-email'|trans }}</dt>
+						<dd>{{ order.authorship.createdUser.email }}</dd>
+					<dt>{{ 'Created at'|trans }}</dt>
+						<dd>{{ order.authorship.createdAt|date }}</dd>
+				</ul>
+			</div>
+		</section>
+	</div>
 </div>
 

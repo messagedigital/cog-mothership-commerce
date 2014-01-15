@@ -1,16 +1,17 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-
-<div class="container-content">
-				{% if not addresses is empty %}
-				<div class="container-details dual-column">
+	<div class="container-content short">
+		{% if not addresses is empty %}
+			<div class="group-grid">
+				<div class="row">
 					{% for address in addresses %}
 						{% include '::order:detail:address:detail' %}
-					{% endfor %} </div>
-				{% else %}
-					<p> {{ 'ms.commerce.order.address.none'|trans }}</p>
-				{% endif %}
-</div>
-
+					{% endfor %}
+				</div>
+			</div>
+		{% else %}
+			<p> {{ 'ms.commerce.order.address.none'|trans }}</p>
+		{% endif %}
+	</div>
 {% endblock %}

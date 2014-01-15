@@ -1,14 +1,14 @@
-<h2 class="title">Created by {{ note.authorship.createdUser.name }} at {{ note.authorship.createdAt|date }}</h2>
-<div class="content-wrap">
-	<ul class="order-details">
-		<li><span>Note</span>{{ note.note|nl2br }}</li>
-		<li>
-			<span>{{ 'ms.commerce.order.note.customer-notified'|trans }}</span>
-			{{ note.customerNotified|replace({'1': 'Yes', '0': 'No'})|default('No') }}
-		</li>
-		<li>
-			<span>{{ 'ms.commerce.order.note.raised-from'|trans }}</span>
-			{{ note.raisedFrom|replace({'_': ' '})|capitalize }}
-		</li>
-	</ul>
-</div>
+<section class="group">
+	<h1 class="title">Created by {{ note.authorship.createdUser.name }} at {{ note.authorship.createdAt|date }}</h1>
+	<div class="content">
+		<dl class="order-details">
+			<dt>Note</dt>
+				<dd>{{ note.note|nl2br }}</dd>
+			<dt>{{ 'ms.commerce.order.note.customer-notified'|trans }}</dt>
+				<dd>{{ note.customerNotified|replace({'1': 'Yes', '0': 'No'})|default('No') }}</dd>
+			<dt>{{ 'ms.commerce.order.note.raised-from'|trans }}</dt>
+				<dd>{{ note.raisedFrom|replace({'_': ' '})|capitalize }}</dd>
+		</dl>
+	</div>
+</section>
+
