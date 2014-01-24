@@ -8,6 +8,6 @@ class SagePayServerGateway extends ServerGateway
 {
 	public function purchase(array $parameters = array())
     {
-        return $this->createRequest('\Message\Mothership\Commerce\Gateway\SagePayServerPurchaseRequest', $parameters);
+        return $this->createRequest('\Message\Mothership\Commerce\Gateway\SagePayServerAuthorizeRequest', $parameters);
     }
 }
