@@ -15,6 +15,7 @@ class Wrapper implements GatewayInterface
 	protected $_order;
 	protected $_username;
 	protected $_redirect;
+	protected $_cancelUrl;
 	protected $_paymentAmount;
 	protected $_transactionID;
 	protected $_currencyID;
