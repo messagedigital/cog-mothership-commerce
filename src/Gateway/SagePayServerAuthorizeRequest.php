@@ -10,7 +10,7 @@ class SagePayServerAuthorizeRequest extends ServerAuthorizeRequest
 	{
 		$data = parent::getData();
 
-		$data['RedirectUrl'] = $this->getRedirectUrl();
+		$data['RedirectUrl'] = $this->getReturnUrl();
 
 		return $data;
 	}
