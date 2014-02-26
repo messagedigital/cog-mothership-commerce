@@ -9,7 +9,7 @@ use Message\Mothership\Commerce\Order;
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
-use InvalidArgumentException;
+use Message\Mothership\OrderReturn\Exception\RefundException;
 
 /**
  * Order refund creator.
@@ -61,8 +61,8 @@ class Create implements DB\TransactionalInterface
 				reference  = :reference?sn
 		', array(
 			'orderID'     => $refund->order->id,
-			'paymentID'   => $refund->payment ? $payment->payment->id : null,
-			'returnID'    => $refund->return ? $payment->return->id : null,
+			'paymentID'   => $refund->payment ? $refund->payment->id : null,
+			'returnID'    => $refund->return ? $refund->return->id : null,
 			'createdAt'   => $refund->authorship->createdAt(),
 			'createdBy'   => $refund->authorship->createdBy(),
 			'method'      => $refund->method->getName(),
@@ -75,17 +75,17 @@ class Create implements DB\TransactionalInterface
 			return $refund;
 		}
 
-		return $this->_loader->getByID($result->id(), $refund->order);
+		return $this->_loader->getByID($refund->id(), $refund->order);
 	}
 
 	protected function _validate(Refund $refund)
 	{
 		if (! $refund->order) {
-			throw new InvalidArgumentException('Could not create refund: no order specified');
+			throw new RefundException('Could not create refund: no order specified');
 		}
 
 		if ($refund->amount <= 0) {
-			throw new InvalidArgumentException('Could not create refund: amount must be greater than 0');
+			throw new RefundException('Could not create refund: amount must be greater than 0');
 		}
 	}
 }
