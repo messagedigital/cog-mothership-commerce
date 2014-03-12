@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Gateway;
 
-use Omnipay\Common\GatewayFactory;
+use Omnipay\Omnipay;
 use Omnipay\Common\CreditCard;
 
 use Message\Mothership\Commerce\Order\Entity\Address\Address;
@@ -36,7 +36,7 @@ class Wrapper implements GatewayInterface
 
 	public function setGateway($gatewayName, $request)
 	{
-		$this->_gateway = GatewayFactory::create($gatewayName, null, $request);
+		$this->_gateway = Omnipay::create($gatewayName, null, $request);
 		$this->_card = new CreditCard;
 
 	}
