@@ -17,7 +17,7 @@ class Sagepay extends Wrapper
 	protected $_cache;
 
 	public function __construct(
-		$gatewayName = 'SagePay_Server',
+		$gatewayName = '\Message\Mothership\Commerce\Gateway\SagePayServerGateway',
 		UserInterface $user,
 		Request $request,
 		Instance $cache,
@@ -61,6 +61,7 @@ class Sagepay extends Wrapper
 			'card'          => $this->_card,
 			'currency'      => $this->_currencyID,
 			'returnUrl'     => $this->_redirect,
+			'cancelUrl'     => $this->_cancelUrl,
 			'transactionId' => $this->_transactionID,
 			'description'   => 'Payment',
 		);

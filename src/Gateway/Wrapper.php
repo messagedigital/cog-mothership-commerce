@@ -15,6 +15,7 @@ class Wrapper implements GatewayInterface
 	protected $_order;
 	protected $_username;
 	protected $_redirect;
+	protected $_cancelUrl;
 	protected $_paymentAmount;
 	protected $_transactionID;
 	protected $_currencyID;
@@ -36,7 +37,13 @@ class Wrapper implements GatewayInterface
 
 	public function setGateway($gatewayName, $request)
 	{
-		$this->_gateway = GatewayFactory::create($gatewayName, null, $request);
+		if (class_exists($gatewayName)) {
+			$this->_gateway = new $gatewayName(null, $request);
+		}
+		else {
+			$this->_gateway = GatewayFactory::create($gatewayName, null, $request);
+		}
+
 		$this->_card = new CreditCard;
 
 	}
@@ -64,6 +71,11 @@ class Wrapper implements GatewayInterface
 	public function setRedirectURL($redirectUrl)
 	{
 		$this->_redirect = $redirectUrl;
+	}
+
+	public function setCancelUrl($cancelUrl)
+	{
+		$this->_cancelUrl = $cancelUrl;
 	}
 
 	public function setPaymentAmount($amount, $currencyID)
