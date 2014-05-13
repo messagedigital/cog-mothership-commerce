@@ -18,20 +18,33 @@ use InvalidArgumentException;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_query;
+	protected $_trans;
 	protected $_loader;
 	protected $_currentUser;
+	protected $_transOverridden = false;
 
-	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
-	{
-		$this->_query       = $query;
+	public function __construct(
+		DB\Transaction $trans,
+		Loader $loader,
+		UserInterface $currentUser
+	) {
+		$this->_trans       = $trans;
 		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
+	/**
+	 * Sets transaction and sets $_transOverridden to true.
+	 *
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_trans = $trans;
+		$this->_transOverridden = true;
+
+		return $this;
 	}
 
 	public function create(Refund $refund)
@@ -46,7 +59,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($refund);
 
-		$this->_query->run('
+		$this->_trans->run('
 			INSERT INTO
 				order_refund
 			SET
@@ -71,11 +84,26 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $refund->reference,
 		));
 
-		if (!($this->_query instanceof DB\Transaction)) {
-			return $refund;
+		$sqlVariable = 'REFUND_ID_' . spl_object_hash($refund);
+
+		$this->_trans->setIDVariable($sqlVariable);
+		$refund->id = '@' . $sqlVariable;
+
+		$event = new Order\Event\EntityEvent($refund->order, $refund);
+		$event->setTransaction($this->_trans);
+
+		$refund = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE_END,
+			$event
+		)->getEntity();
+
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
+
+			return $this->_loader->getByID($this->_trans->getIDVariable($sqlVariable), $refund->order);
 		}
 
-		return $this->_loader->getByID($result->id(), $refund->order);
+		return $refund;
 	}
 
 	protected function _validate(Refund $refund)
