@@ -7,6 +7,7 @@ use Message\User\UserInterface;
 use Message\Mothership\Commerce\Order;
 
 use Message\Cog\DB;
+use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 use InvalidArgumentException;
@@ -18,24 +19,59 @@ use InvalidArgumentException;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_query;
 	protected $_loader;
+	protected $_eventDispatcher;
 	protected $_currentUser;
 
-	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
+	protected $_trans;
+	protected $_transOverridden = false;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param DB\Transaction      $trans           Database transaction
+	 * @param Loader              $loader          Refund loader
+	 * @param DispatcherInterface $eventDispatcher Event dispatcher
+	 * @param UserInterface       $currentUser     Currently logged in user
+	 */
+	public function __construct(DB\Transaction $trans, Loader $loader, DispatcherInterface $eventDispatcher, UserInterface $currentUser)
 	{
-		$this->_query       = $query;
-		$this->_loader      = $loader;
-		$this->_currentUser = $currentUser;
+		$this->_trans           = $trans;
+		$this->_loader          = $loader;
+		$this->_eventDispatcher = $eventDispatcher;
+		$this->_currentUser     = $currentUser;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param DB\Transaction $trans The database transaction to use
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_trans           = $trans;
+		$this->_transOverridden = true;
 	}
 
+	/**
+	 * Create a refund entity.
+	 *
+	 * @param  Refund $refund The refund to create
+	 *
+	 * @return Refund         If the transaction was not overwritten, this is
+	 *                        a refreshed Refund instance re-loaded from the DB.
+	 *                        Otherwise, it's the same instance passed in.
+	 */
 	public function create(Refund $refund)
 	{
+		$event = new Order\Event\EntityEvent($refund->order, $refund);
+		$event->setTransaction($this->_trans);
+
+		$refund = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE,
+			$event
+		)->getEntity();
+
 		// Set create authorship data if not already set
 		if (!$refund->authorship->createdAt()) {
 			$refund->authorship->create(
@@ -46,7 +82,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($refund);
 
-		$this->_query->run('
+		$this->_trans->run('
 			INSERT INTO
 				order_refund
 			SET
@@ -71,16 +107,31 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $refund->reference,
 		));
 
-		if (!($this->_query instanceof DB\Transaction)) {
-			return $refund;
+		$sqlVariable = 'REFUND_ID_' . spl_object_hash($refund);
+
+		$this->_trans->setIDVariable($sqlVariable);
+		$refund->id = '@' . $sqlVariable;
+
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
+
+			return $this->_loader->getByID($this->_trans->getIDVariable($sqlVariable), $refund->order);
 		}
 
-		return $this->_loader->getByID($result->id(), $refund->order);
+		return $refund;
 	}
 
+	/**
+	 * Validate a Refund for creation.
+	 *
+	 * @param  Refund $refund
+	 *
+	 * @throws InvalidArgumentException If the refund does not have an order
+	 * @throws InvalidArgumentException If the refund amount is <= 0
+	 */
 	protected function _validate(Refund $refund)
 	{
-		if (! $refund->order) {
+		if (!$refund->order) {
 			throw new InvalidArgumentException('Could not create refund: no order specified');
 		}
 

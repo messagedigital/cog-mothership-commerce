@@ -233,7 +233,12 @@ class Services implements ServicesInterface
 		});
 
 		$services['order.refund.create'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Refund\Create($c['db.query'], $c['order.refund.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Refund\Create(
+				$c['db.transaction'],
+				$c['order.refund.loader'],
+				$c['event.dispatcher'],
+				$c['user.current']
+			);
 		});
 
 		$services['order.refund.delete'] = $services->factory(function($c) {
