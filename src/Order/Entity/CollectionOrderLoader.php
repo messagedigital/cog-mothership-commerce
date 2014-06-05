@@ -27,11 +27,6 @@ class CollectionOrderLoader implements CollectionInterface
 		$this->_loader     = $loader;
 	}
 
-	public function __sleep()
-	{
-		return array('_collection', '_loaded', '_order');
-	}
-
 	public function __clone()
 	{
 		$this->_collection = clone $this->_collection;
