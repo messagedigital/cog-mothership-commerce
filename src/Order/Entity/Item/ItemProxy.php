@@ -9,7 +9,7 @@ use Message\Cog\DB\Entity\EntityLoaderCollection;
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class ItemProxy
+class ItemProxy extends Item
 {
 	protected $_loaders;
 	protected $_loaded = [];
