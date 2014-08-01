@@ -7,6 +7,7 @@ use Message\Mothership\Commerce\Product\Stock\Location\Collection as LocationCol
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Cog\DB\Entity\EntityLoaderCollection;
 
 /**
  * Order item loader.
@@ -20,10 +21,15 @@ class Loader extends Order\Entity\BaseLoader implements
 	protected $_query;
 	protected $_statusLoader;
 	protected $_stockLocations;
+	protected $_entityLoaders;
 	protected $_includeDeleted = false;
 
-	public function __construct(DB\Query $query, Status\Loader $statusLoader, LocationCollection $stockLocations)
-	{
+	public function __construct(
+		DB\Query $query,
+		Status\Loader $statusLoader,
+		LocationCollection $stockLocations,
+		EntityLoaderCollection $entityLoaders
+	) {
 		$this->_query          = $query;
 		$this->_statusLoader   = $statusLoader;
 		$this->_stockLocations = $stockLocations;
@@ -119,7 +125,11 @@ class Loader extends Order\Entity\BaseLoader implements
 			return $alwaysReturnArray ? array() : false;
 		}
 
-		$items  = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Item\\Item');
+		$items  = $result->bindTo(
+			'Message\\Mothership\\Commerce\\Order\\Entity\\Item\\ItemProxy',
+			[$this->_entityLoaders]
+		);
+		
 		$return = array();
 
 		foreach ($result as $key => $row) {

@@ -65,9 +65,9 @@ class Item implements EntityInterface, RecordInterface
 
 	public function __sleep()
 	{
-		$keys = array();
+		$keys = [];
 		foreach (get_object_vars($this) as $key => $value) {
-			if (substr($key,0,1) == '_') {
+			if (substr($key, 0, 1) == '_') {
 				continue;
 			}
 			$keys[] = $key;
@@ -90,16 +90,19 @@ class Item implements EntityInterface, RecordInterface
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->productTaxRate  = (float) $unit->product->taxRate;
-		$this->taxStrategy     = $unit->product->taxStrategy;
+		$this->_product        = $unit->product;
 		$this->productID       = $unit->product->id;
 		$this->productName     = $unit->product->name;
+		$this->brand           = $unit->product->brand;
+		$this->productTaxRate  = (float) $unit->product->taxRate;
+		$this->taxStrategy     = $unit->product->taxStrategy;
+
+		$this->_unit            = $unit;
 		$this->unitID          = $unit->id;
 		$this->unitRevision    = $unit->revisionID;
 		$this->sku             = $unit->sku;
 		$this->barcode         = $unit->barcode;
 		$this->options         = implode($unit->options, ', ');
-		$this->brand           = $unit->product->brand;
 		$this->weight          = (int) $unit->weight;
 
 		return $this;
@@ -143,51 +146,13 @@ class Item implements EntityInterface, RecordInterface
 		return round($this->listPrice - $this->discount - $this->net, 2);
 	}
 
-	/**
-	 * Get the product associated with this order.
-	 *
-	 * The product is only loaded once per Item instance, unless `$reload` is
-	 * passed as true.
-	 *
-	 * @todo Make this not access the service container statically!
-	 *
-	 * @param  boolean $reload True to force a reload of the Product instance
-	 *
-	 * @return \Message\Mothership\Commerce\Product\Product
-	 */
 	public function getProduct($reload = false)
 	{
-		if (!$this->_product || $reload) {
-			$this->_product = Container::get('product.loader')->getByID($this->productID);
-		}
-
 		return $this->_product;
 	}
 
-	/**
-	 * Get the unit associated with this order.
-	 *
-	 * The unit is loaded with the revision ID stored on this item, so the
-	 * options should match.
-	 *
-	 * The unit is only loaded once per Item instance, unless `$reload` is
-	 * passed as true.
-	 *
-	 * @todo Make this not access the service container statically!
-	 *
-	 * @param  boolean $reload True to force a reload of the Unit instance
-	 *
-	 * @return \Message\Mothership\Commerce\Product\Unit\Unit
-	 */
 	public function getUnit($reload = false)
 	{
-		if (!$this->_unit || $reload) {
-			$this->_unit = Container::get('product.unit.loader')
-				->includeInvisible(true)
-				->includeOutOfStock(true)
-				->getByID($this->unitID, $this->unitRevision);
-		}
-
 		return $this->_unit;
 	}
 
