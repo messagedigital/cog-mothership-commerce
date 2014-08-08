@@ -77,7 +77,15 @@ class Services implements ServicesInterface
 				),
 				'items'      => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Item\Collection,
-					new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader'], $c['stock.locations'])
+					new Commerce\Order\Entity\Item\Loader(
+						$c['db.query'],
+						$c['order.item.status.loader'],
+						$c['stock.locations'],
+						new EntityLoaderCollection([
+							'product' => $c['product.loader'],
+							'unit'    => $c['product.unit.loader'],
+						])
+					)
 				),
 				'notes'      => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
