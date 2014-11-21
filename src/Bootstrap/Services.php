@@ -552,7 +552,6 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\ProductAttributes($c);
 		});
 
-
 		$services['product.form.search'] = $services->factory(function($c) {
 			return new Commerce\Product\Form\ProductSearch($c['translator']);
 		});

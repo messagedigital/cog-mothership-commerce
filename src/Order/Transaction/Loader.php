@@ -130,7 +130,7 @@ class Loader
 	 *
 	 * @return array[Transaction] All transactions of type $type
 	 */
-	public function getByRecordType($type)
+	public function getByType($type)
 	{
 		$result = $this->_query->run('
 			SELECT
