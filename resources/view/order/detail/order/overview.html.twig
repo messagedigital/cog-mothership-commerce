@@ -8,7 +8,7 @@
 				<tfoot class="total-summary">
 					<tr>
 						<th colspan="4">Subtotal</th>
-						<td>{{ order.productGross|price(order.currencyID) }}</td>
+						<td>{{ order.getProductGross()|price(order.currencyID) }} </td>
 						<td></td>
 					</tr>
 					<tr>
@@ -21,7 +21,7 @@
 					</tr>
 					<tr>
 						<th colspan="4">Grand Total</th>
-						<td>{{ order.totalGross|price(order.currencyID) }}</td>
+						<td>{{ order.getTotalGross()|price(order.currencyID) }}</td>
 						<td></td>
 					</tr>
 				</tfoot>

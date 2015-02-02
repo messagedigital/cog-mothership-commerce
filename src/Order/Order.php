@@ -525,4 +525,58 @@ class Order implements PayableInterface, Transaction\RecordInterface
 
         return $this;
     }
+
+	/**
+	 * Gets the gross price of the items
+	 * 
+	 * @return float the gross total
+	 */
+	public function getProductGross()
+	{
+		$total = (float) 0;
+		foreach ($this->getItems() as $item) {
+			$total += $item->gross;
+		}
+
+		return $total;
+	}
+
+	/**
+	 * Gets the net price of the items
+	 * 
+	 * @return float the net total
+	 */
+	public function getProductNet()
+	{
+		$total = (float) 0;
+		foreach ($this->getItems() as $item) {
+			$total += $item->net;
+		}
+
+		return $total;
+	}
+
+	/**
+	 * Gets the gross price of the order
+	 * 
+	 * @return float the gross total
+	 */
+	public function getTotalGross()
+	{
+		$total = $this->getProductGross() + $this->shippingGross - $this->totalDiscount;
+
+		return $total;
+	}
+
+	/**
+	 * Gets the net price of the order
+	 * 
+	 * @return float the net total
+	 */
+	public function getTotalNet()
+	{
+		$total = $this->getProductNet() + $this->shippingNet - $this->totalDiscount;
+
+		return $total;
+	}
 }
