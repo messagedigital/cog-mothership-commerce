@@ -41,4 +41,11 @@ interface PayableInterface
 	 * @return string
 	 */
 	public function getPayableTransactionID();
+
+	/**
+	 * Get all the payments against the object
+	 *
+	 * @return array | \Message\Cog\ValueObject\Collection
+	 */
+	public function getPayments();
 }

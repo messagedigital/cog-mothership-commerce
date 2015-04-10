@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order\Entity;
 
-use Message\Mothership\Commerce\Order\Order;
+use Message\Cog\ValueObject\Collection as BaseCollection;
 
 /**
  * Collection of entities relating to a specific order.
@@ -10,8 +10,9 @@ use Message\Mothership\Commerce\Order\Order;
  * Entities are lazy loaded on demand.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
-class Collection implements CollectionInterface
+class Collection extends BaseCollection implements CollectionInterface
 {
 	protected $_items = array();
 
@@ -20,6 +21,38 @@ class Collection implements CollectionInterface
 		return array('_items');
 	}
 
+	/**
+	 * Add validation and set key to the ID
+	 */
+	protected function _configure()
+	{
+		$this->addValidator(function ($item) {
+			if (!$item instanceof EntityInterface) {
+				throw new \InvalidArgumentException('Item must be an instance of EntityInterface');
+			}
+		});
+
+		$this->setKey(function ($item) {
+			if (property_exists($item, 'id')) {
+				return $item->id;
+			}
+			if (method_exists($item, 'getID')) {
+				return $item->getID();
+			}
+			if (method_exists($item, 'getId')) {
+				return $item->getId();
+			}
+
+			return count($this->all()) - 1;
+		});
+	}
+
+	/**
+	 * @param mixed $id
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return EntityInterface
+	 */
 	public function get($id)
 	{
 		foreach ($this->_items as $item) {
@@ -31,6 +64,12 @@ class Collection implements CollectionInterface
 		throw new \InvalidArgumentException(sprintf('Identifier `%s` does not exist on entity collection', $id));
 	}
 
+	/**
+	 * @param $property
+	 * @param $value
+	 *
+	 * @return array
+	 */
 	public function getByProperty($property, $value)
 	{
 		$return = array();
@@ -44,36 +83,24 @@ class Collection implements CollectionInterface
 		return $return;
 	}
 
-	public function exists($id)
-	{
-		try {
-			$this->get($id);
-		}
-		catch (\InvalidArgumentException $e) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public function all()
-	{
-		return $this->_items;
-	}
-
+	/**
+	 * Preserved for backwards compatibility. Use `add()` instead.
+	 *
+	 * @param EntityInterface $entity
+	 */
 	public function append(EntityInterface $entity)
 	{
-		$this->_items[] = $entity;
+		$this->add($entity);
 	}
 
 	/**
 	 * Remove an entity from this collection.
 	 *
-	 * @param  int|EntityInterface $item Entity ID or exact same entity instance
-	 *                                   to be removed (it's not enough to just
-	 *                                   all have the same properties)
+	 * @param  int|EntityInterface $entity  Entity ID or exact same entity instance
+	 *                                      to be removed (it's not enough to just
+	 *                                      all have the same properties)
 	 *
-	 * @return boolean                   True if the item was removed
+	 * @return boolean                      True if the item was removed
 	 */
 	public function remove($entity)
 	{
@@ -87,40 +114,5 @@ class Collection implements CollectionInterface
 		}
 
 		return false;
-	}
-
-	public function clear()
-	{
-		$this->_items = array();
-	}
-
-	public function count()
-	{
-		return count($this->_items);
-	}
-
-	public function offsetSet($id, $value)
-	{
-		throw new \BadMethodCallException('`Entity\Collection` does not allow setting entities using array access');
-	}
-
-	public function offsetGet($id)
-	{
-		return $this->get($id);
-	}
-
-	public function offsetExists($id)
-	{
-		return $this->exists($id);
-	}
-
-	public function offsetUnset($id)
-	{
-		unset($this->_items[$id]);
-	}
-
-	public function getIterator()
-	{
-		return new \ArrayIterator($this->_items);
 	}
 }
