@@ -23,6 +23,39 @@ class ProductProxy extends Product
 		$this->_loaders = $loaders;
 	}
 
+	/**
+	 * Exclude lazy loaded attributes
+	 * 
+	 * @{inheritDocs}
+	 */
+	public function __sleep()
+	{
+		return array_diff(array_keys(get_object_vars($this)), [
+			'_units',
+			'_images',
+			'_details',
+			'_taxes',
+			'_prices',
+			'_loaded'
+		]);
+	}
+
+	/**
+	 * Reinitialize lazily loaded attributes
+	 * 
+	 * @{inheritDocs}
+	 */
+	public function __wakeup()
+	{
+		$this->_loaded = [];
+
+		$this->_units      = new Unit\Collection;
+		$this->_images     = new Image\Collection;
+		$this->_details    = new Type\DetailCollection;
+		$this->_taxes      = new Tax\Rate\TaxRateCollection;
+		$this->_prices     = new Price\PriceCollection;
+	}
+
 	public function getAllUnits()
 	{
 		if (!in_array('units', $this->_loaded)) {
