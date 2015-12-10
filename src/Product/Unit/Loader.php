@@ -266,7 +266,7 @@ class Loader implements ProductEntityLoaderInterface
 		;
 
 		if (!$this->_loadInvisible) {
-			$this->_queryBuilder->where('product_unit.visible = ?i', [0]);
+			$this->_queryBuilder->where('product_unit.visible = ?i', [1]);
 		}
 
 		if (!$this->_loadOutOfStock) {
