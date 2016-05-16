@@ -274,7 +274,9 @@ class Loader implements ProductEntityLoaderInterface
 		}
 
 		if (!$this->_loadDeleted) {
-			$this->_queryBuilder->where('product_unit.deleted_at IS NULL');
+			$this->_queryBuilder->where('product_unit.deleted_at IS NULL')
+				->where('product.deleted_at IS NULL')
+			;
 		}
 	}
 
