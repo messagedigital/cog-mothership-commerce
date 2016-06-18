@@ -101,7 +101,7 @@ ms.commerce:
         label: Supplier Reference
         help: Optionally you can store a reference from the supplier of this product.
       weight-grams:
-        label: Weight Grams
+        label: Weight (g)
         help: This field can be used to calculate shipping costs, depending on your delivery preferences.
       fabric:
         label: Fabric

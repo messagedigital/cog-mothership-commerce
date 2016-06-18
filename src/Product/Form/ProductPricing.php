@@ -9,7 +9,6 @@ use Message\Mothership\Commerce\Product\Product;
 
 class ProductPricing extends AbstractType
 {
-
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$product   = $options['product'];

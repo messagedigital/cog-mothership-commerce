@@ -19,13 +19,20 @@ class PriceGroup extends Form\AbstractType
 	{
 		$priceTypes = $options['price_types'];
 		$currency   = $options['currency'];
+
 		foreach ($priceTypes as $type => $value) {
+			if (!empty($options['data']) && !empty($options['data'][$type])) {
+				$data = $options['data'][$type];
+			} else {
+				$data = isset($options['pricing'][$type]) ? $options['pricing'][$type] : $options['default'];
+			}
+
 			$value = $value ?: 0;
 
 			$fieldOpts = [
 				'currency' => $currency,
 				'label'    => "ms.commerce.product.pricing.$type.label",
-				'data'     => isset($options['pricing'][$type]) ? $options['pricing'][$type] : $options['default'],
+				'data'     => $data,
 				'attr'     => [
 					'class' => 'price-field',
 				]

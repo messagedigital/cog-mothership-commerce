@@ -17,6 +17,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Edit extends Controller
 {
 	const HIDDEN_SUFFIX = '_hidden';
+	const UNIT_DATA = 'ms.commerce.unit.data';
 
 	/**
 	 * @var Product
@@ -246,8 +247,9 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$form = $this->_addNewUnitForm();
 		$form->handleRequest();
+		$data = $form->getData();
 
-		if ($form->isValid() && $data = $form->getData()) {
+		if ($form->isValid() && $data) {
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
 			$unit->weight 	   = $data['weight'];
@@ -277,6 +279,8 @@ class Edit extends Controller
 			$this->addFlash('success', 'ms.commerce.product.units.create.success', [
 				'%sku%' => $unit->sku,
 			]);
+		} else {
+			$this->get('http.session')->set(self::UNIT_DATA, $data);
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
@@ -650,11 +654,20 @@ class Edit extends Controller
 	 */
 	protected function _addNewUnitForm()
 	{
-		return $this->createForm($this->get('product.form.unit.add'), null, [
+		$data = $this->get('http.session')->get(self::UNIT_DATA) ?: [];
+
+		$form = $this->createForm($this->get('product.form.unit.add'), $data, [
 			'action' => $this->generateUrl('ms.commerce.product.edit.units.create.action', [
 				'productID' => $this->_product->id,
 			]),
+			'data' => $data,
 		]);
+
+		if ($data) {
+			$this->get('http.session')->remove(self::UNIT_DATA);
+		}
+
+		return $form;
 	}
 
 	protected function _getProductAttributesForm()
