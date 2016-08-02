@@ -185,7 +185,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['order.address.create'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['order.address.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['order.address.loader'], $c['user.current'], $c['order.address.delete']);
+		});
+
+		$services['order.address.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Address\Delete($c['db.query'], $c['user.current'], $c['order.address.loader']);
 		});
 
 		// Order item entity

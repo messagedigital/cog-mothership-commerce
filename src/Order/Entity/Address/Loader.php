@@ -15,6 +15,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query)
 	{
@@ -38,6 +39,20 @@ class Loader extends Order\Entity\BaseLoader
 		return $this->_load($result->flatten(), true, $order);
 	}
 
+	/**
+	 * Set whether to load deleted items.
+	 *
+	 * @param  bool $bool    true / false as to whether to include deleted addresses.
+	 *
+	 * @return Loader        Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool = true)
+	{
+		$this->_includeDeleted = (bool) $bool;
+
+		return $this;
+	}
+
 	public function getByID($id, Order\Order $order = null)
 	{
 		return $this->_load($id, false, $order);
@@ -53,6 +68,8 @@ class Loader extends Order\Entity\BaseLoader
 			return $alwaysReturnArray ? array() : false;
 		}
 
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+
 		$result = $this->_query->run('
 			SELECT
 				*,
@@ -63,6 +80,7 @@ class Loader extends Order\Entity\BaseLoader
 				order_address
 			WHERE
 				address_id IN (?ij)
+			' . $includeDeleted . '
 			ORDER BY
 				created_at DESC
 		', array($ids));
