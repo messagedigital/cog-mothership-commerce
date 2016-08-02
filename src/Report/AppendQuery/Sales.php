@@ -73,7 +73,7 @@ class Sales implements FilterableInterface
 			->select('item.order_id AS "Order_ID"')
 			->select('NULL AS "Return_ID"')
 			->select('item.product_id AS "Product_ID"')
-			->select('item.product_name AS "Product"')
+			->select('product.name AS "Product"')
 			->select('item.options AS "Option"')
 			->select('country AS "Country"')
 			->select('user.forename AS "User_Forename"')

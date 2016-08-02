@@ -121,9 +121,7 @@ class SalesByItem extends AbstractSales
 		$result = [];
 
 		if ($output === "json") {
-
 			foreach ($data as $row) {
-
 				$result[] = [
 					[
 						'v' => (float) $row->UnixDate,
@@ -158,10 +156,9 @@ class SalesByItem extends AbstractSales
 					],
 				];
 			}
+
 			return json_encode($result);
-
 		} else {
-
 			foreach ($data as $row) {
 				$result[] = [
 					$row->Date,
@@ -177,6 +174,7 @@ class SalesByItem extends AbstractSales
 					$row->Gross,
 				];
 			}
+
 			return $result;
 		}
 	}
