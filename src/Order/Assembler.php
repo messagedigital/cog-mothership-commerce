@@ -314,7 +314,13 @@ class Assembler
 		// the given quantity
 		if ($quantity > $unitCount) {
 			for ($i = $unitCount; $i < $quantity; $i++) {
-				$this->addUnit($unit);
+				if($unitCount === 0) {
+					$this->addUnit($unit);
+				} else {
+					// actual price should be the same on
+					// every item
+					$this->addItem(clone($row->first()));
+				}
 			}
 		}
 
@@ -322,6 +328,37 @@ class Assembler
 		$this->_dispatchEvents = true;
 
 		// Dispatch the update event
+		return $this->dispatchEvent();
+	}
+
+	/**
+	 * Update the actual price of items for a given unit on the order being
+	 * assembled.
+	 *
+	 * @param  Unit $unit     The unit to change quantity for
+	 * @param  int  $quantity The quantity to set
+	 *
+	 * @return Assembler      Returns $this for chainability
+	 */
+	public function setActualPrice(Unit $unit, $actualPrice)
+	{
+		// Disable event dispatching while we update the quantities
+		$this->_dispatchEvents = false;
+
+		$row       = $this->_order->items->getRows()[$unit->id];
+		$items     = $row->all();
+
+		// if the actual prices are the same then return
+		if ($row->first()->actualPrice === $actualPrice) {
+			return $this;
+		}
+
+		foreach($items as $item) {
+			$item->actualPrice = $actualPrice;
+		}
+
+		$this->_dispatchEvents = true;
+
 		return $this->dispatchEvent();
 	}
 
