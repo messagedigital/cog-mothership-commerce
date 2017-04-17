@@ -1,4 +1,17 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/full_slideout' %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	{% stylesheets
+		'@Message:Mothership:Commerce::resources/assets/css/commerce.css'
+
+		output='/assets/css/ms_commerce.css'
+		filter='csscogulerewrite,?cssmin'
+	%}
+		<link rel="stylesheet" href="{{ asset_url }}">
+	{% endstylesheets %}
+{% endblock %}
+
 {% block javascripts %}
 	{{ parent() }}
 	{% javascripts
